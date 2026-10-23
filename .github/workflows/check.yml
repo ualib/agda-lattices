@@ -1,0 +1,79 @@
+# =============================================================================
+#  check.yml: type-check agda-lattices
+#  ----------------------------------------------------------------------------
+#
+#  One job, so that the interface files of the agda-algebras modules the
+#  library imports are built once per run.  The job reuses the project's Nix
+#  flake, so CI runs exactly the command a reader runs locally:
+#  `nix develop --command make check` (the pragma check, then Agda).
+#
+#  Design notes.
+#
+#    + The Agda is a pre-release 2.9.0 that agda-algebras' flake builds from
+#      source (about an hour on a runner).  The public Cachix cache
+#      `formalverification`, which agda-algebras' own CI fills, holds it, so
+#      the job reads that cache (`skipPush`: it never writes) and fetches the
+#      compiler and the patched standard library instead of building them.
+#    + The actions/cache entry holds _build/ (this library's interfaces) and
+#      .deps/ (the copy of the pinned agda-algebras sources, with their
+#      interfaces and the .source stamp the dev shell compares against the
+#      pin).  The key hashes flake.lock, so moving the agda-algebras pin
+#      starts from scratch.
+#    + The static checks (shellcheck, the safety check's cases) live in
+#      ci.yml, which needs no Nix.
+#
+# =============================================================================
+
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Type-check the library
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+
+      - name: Read the formalverification cache (the pre-release Agda)
+        uses: cachix/cachix-action@v17
+        with:
+          name: formalverification
+          skipPush: true
+
+      - name: Cache Agda interface files and the agda-algebras copy
+        uses: actions/cache@v4
+        with:
+          path: |
+            _build/
+            .deps/
+          key: agdai-${{ runner.os }}-${{ hashFiles('flake.lock') }}-${{ hashFiles('src/**/*.lagda.md', 'src/**/*.agda', 'agda-lattices.agda-lib') }}
+          restore-keys: |
+            agdai-${{ runner.os }}-${{ hashFiles('flake.lock') }}-
+
+      - name: Show the toolchain
+        run: |
+          set -euxo pipefail
+          nix develop --command bash -c 'agda --version | head -n1; cat .agda/libraries'
+
+      - name: Check the pragmas and type-check the library
+        run: |
+          set -euxo pipefail
+          nix develop --command make check

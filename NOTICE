@@ -1,0 +1,11 @@
+agda-lattices
+Copyright 2018-2026 William DeMeo and the agda-algebras development team.
+
+The library's first modules were written in the Agda Universal Algebra
+Library, agda-algebras (https://github.com/ualib/agda-algebras), and moved out
+of it in October 2026.  Its NOTICE reads, in the part that pertains to them:
+
+  Copyright 2018-2026 The agda-algebras development team.
+
+That code is licensed under the Apache License 2.0, the license of agda-algebras
+and of this repository (see LICENSE).

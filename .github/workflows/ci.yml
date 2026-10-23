@@ -1,0 +1,32 @@
+# =============================================================================
+#  ci.yml: the static checks
+#  ----------------------------------------------------------------------------
+#
+#  Checks that need no Nix and no Agda: shellcheck over the scripts, and the
+#  cases of the safety check (scripts/test-check-safety.sh), whose last case
+#  runs the check on src/.  The type-check is check.yml.
+#
+# =============================================================================
+
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  static:
+    name: Shellcheck and the safety check's cases
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Shellcheck
+        run: shellcheck scripts/*.sh
+
+      - name: The cases of the safety check
+        run: bash scripts/test-check-safety.sh
