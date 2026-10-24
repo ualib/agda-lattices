@@ -54,7 +54,7 @@ The module defines the following:
    `IsDirectlyIndecomposable`{.AgdaFunction} on any lattice;
 +  the consequences of neutrality: `neutral-∨-distr`{.AgdaFunction},
    `neutral-∧-distr`{.AgdaFunction} (by duality, through the dual lattice of
-   [Classical.Structures.Lattice.Dual][]) and `neutral-cancel`{.AgdaFunction};
+   [Lattices.Dual][]) and `neutral-cancel`{.AgdaFunction};
    the bounds are neutral (`bottom-neutral`{.AgdaFunction},
    `top-neutral`{.AgdaFunction}) and complement each other;
 +  each notion respects equality, and is carried along an isomorphism
@@ -93,8 +93,6 @@ import Relation.Binary.Reasoning.Setoid as SetoidReasoning
 -- Imports from the Agda Universal Algebra Library --------------------------------
 open import Classical.Properties.Lattice          using ( module Lattice-Order )
 open import Classical.Structures.Lattice.Basic    using ( Lattice ; module Lattice-Op )
-open import Classical.Structures.Lattice.Dual     using ( dualLattice ; module LatticeDual )
-open import Classical.Structures.Lattice.Product  using ( _×ˡ_ )
 open import Setoid.Algebras.Basic                 using ( 𝔻[_] ; 𝕌[_] )
 open import Setoid.Algebras.Finite                using ( FiniteAlgebra ; all²? ; exists? )
 open import Setoid.Congruences.Monolith           using ( Nontrivial )
@@ -103,6 +101,8 @@ open import Setoid.Homomorphisms.Basic            using ( hom )
 open import Setoid.Homomorphisms.Isomorphisms     using ( _≅_ ; ≅-sym ; ≅toInjective )
 
 -- Imports from this library --------------------------------------------------------
+open import Lattices.Dual              using ( dualLattice ; module LatticeDual )
+open import Lattices.Product           using ( _×ˡ_ )
 open import Lattices.Semidistributive  using ( hom-preserves-∧ ; hom-preserves-∨ ; hom-preserves-≤ )
 
 open Func renaming ( to to _⟨$⟩_ )
@@ -307,7 +307,7 @@ neutral-∧-distr 𝑳 n = neutral-∨-distr (dualLattice 𝑳) (IsNeutral-dual 
 A bottom `b` is neutral: with `b ∧ x ≈ b` and `b ∨ x ≈ x`, both sides of the
 median identity at `b`, `x`, `y` are `x ∧ y`.  A top is neutral dually, through
 the dual lattice again, whose bottoms are the tops of `𝑳`{.AgdaBound}
-(`≤ᵈ-unflip`{.AgdaFunction} of [Classical.Structures.Lattice.Dual][]).  A top
+(`≤ᵈ-unflip`{.AgdaFunction} of [Lattices.Dual][]).  A top
 and a bottom are complements of each other, so both are central in a bounded
 lattice.
 
@@ -506,7 +506,7 @@ module _ (𝑲 : Lattice α ρ) (𝑳 : Lattice β σ) (φ : proj₁ 𝑲 ≅ pr
 
 #### Products
 
-In a product `𝑳₁ ×ˡ 𝑳₂` of [Classical.Structures.Lattice.Product][] the
+In a product `𝑳₁ ×ˡ 𝑳₂` of [Lattices.Product][] the
 operations, the equality and the order are componentwise by definition, so a
 pair of neutral elements is neutral, a pair of bottoms is a bottom, a pair of
 tops a top, and complements pair with complements.  In a product of two
@@ -657,8 +657,8 @@ module _ (𝑳 : Lattice α ρ) (𝑭 : FiniteAlgebra (proj₁ 𝑳)) where
 [Lattices.Semidistributive]: Lattices.Semidistributive.html
 [Lattices.Modular]: Lattices.Modular.html
 [Classical.Properties.Lattice]: Classical.Properties.Lattice.html
-[Classical.Structures.Lattice.Dual]: Classical.Structures.Lattice.Dual.html
-[Classical.Structures.Lattice.Product]: Classical.Structures.Lattice.Product.html
+[Lattices.Dual]: Lattices.Dual.html
+[Lattices.Product]: Lattices.Product.html
 [Setoid.Algebras.Finite]: Setoid.Algebras.Finite.html
 [Setoid.Decompositions.Finite]: Setoid.Decompositions.Finite.html
 [Birkhoff (1948)]: https://bookstore.ams.org/coll-25

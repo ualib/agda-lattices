@@ -25,7 +25,7 @@ candidates for `c`.
 
 This module proves both directions, over any lattice on a setoid, with the
 intervals of [Lattices.Interval][] as the factors and the product of
-[Classical.Structures.Lattice.Product][].
+[Lattices.Product][].
 
 +  **Forward** (`Decomposition`{.AgdaModule}).  For `c` neutral with
    `c ∧ c' ≈ ⊥` and `c ∨ c' ≈ ⊤`, the map `φ x = (x ∧ c , x ∨ c)` is a
@@ -89,7 +89,6 @@ open import Classical.Properties.Lattice          using ( module Lattice-Order )
 open import Classical.Signatures.Lattice          using ( ∧-Op ; ∨-Op )
 open import Classical.Structures.Interpret        using ( interp-cong )
 open import Classical.Structures.Lattice.Basic    using ( Lattice ; module Lattice-Op )
-open import Classical.Structures.Lattice.Product  using ( _×ˡ_ )
 open import Setoid.Algebras.Basic                 using ( 𝔻[_] ; 𝕌[_] ; _^_ )
 open import Setoid.Congruences.Monolith           using ( Nontrivial )
 open import Setoid.Functions                      using ( IsInjective ; IsSurjective ; Image_∋_ )
@@ -103,6 +102,7 @@ open import Lattices.Central   using ( IsNeutral ; IsCentral ; ProperCentral ; I
                                      ; IsBottom-resp ; IsTop-resp ; IsBottom-I-invar ; IsTop-I-invar
                                      ; IsCentral-I-invar ; ×ˡ-central )
 open import Lattices.Interval  using ( _[_,_] ; interval-nontrivial )
+open import Lattices.Product   using ( _×ˡ_ )
 
 open Func renaming ( to to _⟨$⟩_ )
 open _≅_
@@ -322,7 +322,7 @@ module _ (𝑳 : Lattice α ρ) (𝑳₁ : Lattice β σ) (𝑳₂ : Lattice γ 
 [Lattices.Interval]: Lattices.Interval.html
 [Lattices.Examples.Central]: Lattices.Examples.Central.html
 [Lattices.Examples.TwoByThree]: Lattices.Examples.TwoByThree.html
-[Classical.Structures.Lattice.Product]: Classical.Structures.Lattice.Product.html
+[Lattices.Product]: Lattices.Product.html
 [Setoid.Homomorphisms.Isomorphisms]: Setoid.Homomorphisms.Isomorphisms.html
 [Birkhoff (1948)]: https://bookstore.ams.org/coll-25
 [Grätzer (1998)]: https://doi.org/10.1007/978-3-0348-7633-9

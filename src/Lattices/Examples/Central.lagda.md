@@ -66,7 +66,6 @@ open import Relation.Nullary.Negation.Core         using ( ¬_ )
 
 -- Imports from the Agda Universal Algebra Library ------------------------------
 open import Classical.Structures.Lattice.Basic     using ( Lattice )
-open import Classical.Structures.Lattice.Product   using ( _×ˡ_ )
 open import Classical.Properties.Lattice           using ( module Lattice-Order )
 open import Setoid.Algebras.Finite                 using ( FiniteAlgebra )
 open import Setoid.Homomorphisms.Isomorphisms      using ( _≅_ ; ≅-refl )
@@ -82,7 +81,7 @@ open import Lattices.Examples.Mn            using ( M ; M-finite )
 open import Lattices.Examples.N5            using ( N₅ ; N₅-finite )
 open import Lattices.Examples.TwoByThree    using ( _∧₂_ ; _∨₂_ ; laws₂ ; _∧₃_ ; _∨₃_ ; laws₃
                                                   ; _∧_ ; _∨_ ; laws₆ )
-open import Lattices.Product                using ( module Product )
+open import Lattices.Product                using ( _×ˡ_ ; module Product )
 open import Lattices.Interval               using ( _[_,_] )
 open import Lattices.Table                  using ( tableLattice ; tableLattice-FiniteAlgebra )
 ```

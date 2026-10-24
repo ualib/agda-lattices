@@ -42,7 +42,7 @@ join prime elements generate the lattice then `D(L) = L`
 decidable equality is the first instance (Corollary 2.11,
 `FL-D-total`{.AgdaFunction}), and so is its dual, since the generators are
 meet prime too (`FL-Dᵈ-total`{.AgdaFunction}).  The dual sets `Dᵈ_k(L)` are
-the sets `D_k` of the dual lattice of [Classical.Structures.Lattice.Dual][],
+the sets `D_k` of the dual lattice of [Lattices.Dual][],
 and (W) passes to the dual (`SatisfiesW-dual`{.AgdaFunction}).
 
 Not formalized here: the minimal join cover refinement property and the sets
@@ -85,10 +85,10 @@ import Data.List.Relation.Unary.All as All
 -- Imports from the Agda Universal Algebra Library ------------------------------
 open import Classical.Properties.Lattice        using ( module Lattice-Order )
 open import Classical.Structures.Lattice.Basic  using ( Lattice ; module Lattice-Op )
-open import Classical.Structures.Lattice.Dual   using ( dualLattice ; module LatticeDual )
 open import Setoid.Algebras.Basic               using ( 𝔻[_] ; 𝕌[_] )
 
 -- Imports from this library ----------------------------------------------------
+open import Lattices.Dual                   using ( dualLattice ; module LatticeDual )
 open import Lattices.Free.Duality           using ( dual ; dual-involutive )
 open import Lattices.Free.Semidistributive  using ( FL-satisfiesW )
 open import Lattices.Free.Term              using ( LatTerm ; ℊ ; _∧̇_ ; _∨̇_ ; module Evaluation )
