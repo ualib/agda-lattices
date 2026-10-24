@@ -73,7 +73,6 @@ import Data.List.Relation.Unary.All as All
 open import Classical.Properties.Lattice        using ( module Lattice-Order )
 open import Classical.Signatures.Lattice        using ( ∧-Op ; ∨-Op )
 open import Classical.Structures.Lattice.Basic  using ( Lattice ; module Lattice-Op )
-open import Classical.Structures.Lattice.Dual   using ( dualLattice )
 open import Setoid.Algebras.Basic               using ( 𝔻[_] ; 𝕌[_] )
 open import Setoid.Algebras.Finite              using ( FiniteAlgebra )
 open import Setoid.Functions                    using ( IsSurjective ; Image_∋_ )
@@ -83,6 +82,7 @@ open import Setoid.Homomorphisms.Properties     using ( ⊙-hom )
 -- Imports from this library ----------------------------------------------------
 open import Lattices.Bounded.Covers     using ( D ; D-total ; Dᵈ-total ; D-≤ ; _≪_ )
 open import Lattices.Bounded.Preimage   using ( bounded )
+open import Lattices.Dual               using ( dualLattice )
 open import Lattices.Free.Countable     using ( finite-embedding )
 open import Lattices.Free.Term          using ( ℊ )
 open import Lattices.Free.Universal     using ( FL ; FL-extend )
@@ -226,7 +226,7 @@ module TableD {n : ℕ} {_∧_ _∨_ : Fin (suc n) → Fin (suc n) → Fin (suc 
 The dual of a pair of tables is the pair swapped, and its join dependency
 relation is the meet dependency relation of the original
 ([Lattices.Bounded.Finite][]); its lattice has the carrier and the operations
-of the dual lattice of [Classical.Structures.Lattice.Dual][], so membership
+of the dual lattice of [Lattices.Dual][], so membership
 in the sets `D_k` transfers between the two (`D-same`{.AgdaFunction}), and
 the absence of a dual cycle gives `Dᵈ(L) = L`.  With both halves, the finite
 case of Kostinsky's theorem for a table lattice follows from the enumeration

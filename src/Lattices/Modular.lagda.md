@@ -21,10 +21,10 @@ and [Lattices.Modular.Birkhoff][] (a modular lattice is distributive if and only
 if it has no sublattice isomorphic to the diamond `M₃`), and together they are
 the M₃-N₅ theorem ([Davey and Priestley (2002)][], Theorem 4.10).
 
-agda-algebras has distributive lattices as a bundle,
-`DistributiveLattice`{.AgdaFunction} of
-[Classical.Structures.Lattice.DistributiveLattice][], a lattice packaged with
-its distributive laws.  This module states both conditions as *predicates* on
+This library has distributive lattices as a structure too,
+`DistributiveLattice`{.AgdaFunction} of [Lattices.Distributive][], a lattice
+packaged with its distributive laws, and that module passes between the
+structure and the predicate below.  This module states both conditions as *predicates* on
 a given lattice, in the shape of [Lattices.Semidistributive][], so that a
 proof can be applied to the elements it is about, a decision procedure can
 sweep them, and the conditions can be moved to sublattices and along

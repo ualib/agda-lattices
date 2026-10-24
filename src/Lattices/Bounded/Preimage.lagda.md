@@ -77,13 +77,13 @@ import Data.List.Relation.Unary.All as All
 -- Imports from the Agda Universal Algebra Library ------------------------------
 open import Classical.Properties.Lattice        using ( module Lattice-Order )
 open import Classical.Structures.Lattice.Basic  using ( Lattice ; module Lattice-Op )
-open import Classical.Structures.Lattice.Dual   using ( dualLattice ; module LatticeDual )
 open import Setoid.Algebras.Basic               using ( 𝔻[_] ; 𝕌[_] )
 open import Setoid.Functions                    using ( IsSurjective ; Image_∋_ )
 
 -- Imports from this library ----------------------------------------------------
 open import Lattices.Bounded.Covers        using ( D ; D-total ; Dᵈ-total ; ≤ᵈ? )
 open import Lattices.Bounded.Homomorphism  using ( LowerBounded ; UpperBounded ; Bounded )
+open import Lattices.Dual                  using ( dualLattice ; module LatticeDual )
 open import Lattices.Free.Canonical.Basic  using ( ⋁⁺ ; ⋀⁺ ; ⋁⁺-upper ; ⋁⁺-least ; ⋀⁺-lower ; ≈ʷ-refl
                                                  ; ∨̇-cong ; ∨̇-idem ; ∨̇-comm ; ∨̇-assoc
                                                  ; ∧̇-cong ; ∧̇-idem ; ∧̇-comm ; ∧̇-assoc )
