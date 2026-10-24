@@ -41,8 +41,8 @@ products that the library uses, as follows.
    coordinatewise (`Π-≤`{.AgdaFunction}).
 
 The binary product came from agda-algebras, where it was the module
-`Lattices.Product`, with its history
-(`docs/provenance.md`).  Following agda-algebras' discipline for an eventual
+`Classical.Structures.Lattice.Product`, with its history.  Following
+agda-algebras' discipline for an eventual
 Cubical port, the underlying equivalence of the product is isolated in
 `A×B`{.AgdaFunction}, the pointwise pair of the component equivalences, so that
 it can be mechanically substituted on the port.

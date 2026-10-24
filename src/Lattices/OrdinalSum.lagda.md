@@ -16,12 +16,16 @@ stacks `𝓛₂`{.AgdaBound} on top of `𝓛₁`{.AgdaBound} and *glues* the top
 lower summand lies below every element of the upper one, and the two chosen
 extrema become a single element.
 
-We denote this operation by `L ⊕ₐ M`.
+We write `𝓛₁ ⊕ₐ 𝓛₂` for it in prose; no operator of that name is defined.  In
+Agda it is `ordinalSum`{.AgdaFunction}, below, which also takes the two chosen
+extrema, so the name `ordinalSum` denotes the *adjoined* (glued) sum throughout
+this library.
 
-The (unglued) **ordinal sum**, in which the top of the lower summand is covered by the
-bottom of the upper, is the derived composite `(𝓛₁ ⊕ₐ chain₂) ⊕ₐ 𝓛₂`, gluing a
-two-element chain in the middle leaves exactly one covering edge, so the glued form
-is the module's single canonical primitive.
+The unglued ordinal sum, in which the top of the lower summand is covered by the
+bottom of the upper, is not defined separately.  It is the composite
+`(𝓛₁ ⊕ₐ 𝟐) ⊕ₐ 𝓛₂`, where `𝟐` is a two-element chain: gluing a two-element chain
+in the middle leaves exactly one covering edge, so the glued form is the
+module's single canonical primitive.
 
 Because the sum glues at chosen extrema, the construction takes them as data: a
 `TopOf 𝓛₁`{.AgdaFunction} and a `BottomOf 𝓛₂`{.AgdaFunction}
@@ -517,7 +521,9 @@ lemmas name these unfoldings for consumers.
 
 **The sum operator**.
 
-The standalone operator, for consumers who need only the lattice.
+The standalone operator, for consumers who need only the lattice: the
+adjoined (glued) sum `𝓛₁ ⊕ₐ 𝓛₂` at the chosen top `t` of `𝓛₁` and bottom `b` of
+`𝓛₂`.
 
 ```agda
 ordinalSum : (𝓛₁ : Lattice α ρ) → TopOf 𝓛₁ → (𝓛₂ : Lattice β σ) → BottomOf 𝓛₂
@@ -528,9 +534,9 @@ ordinalSum 𝓛₁ t 𝓛₂ b = LatticeOrdinalSum.⊕-Lattice 𝓛₁ t 𝓛₂
 --------------------------------------
 
 [^1]: General lattices need not have extrema, and threading the choice keeps the
-      construction total and the resulting carrier syntactically predictable (the
-      corollaries that adjoin a fresh extremum to a lattice instantiate a summand at
-      `chain₂` and its concrete `0`/`1`).
+      construction total and the resulting carrier syntactically predictable (a
+      corollary that adjoins a fresh extremum to a lattice instantiates a summand
+      at a two-element chain and its concrete bottom and top).
 
 [^2]: The same idiom should be applied to any relation built by restriction along a non-injective map.
 
