@@ -117,10 +117,16 @@ Every module is under `src/Lattices/`; names below drop the common prefix
    `Generation` (free generation in a lattice satisfying Whitman's condition,
    FJN Corollary 1.12), `Breadth` (Jónsson and Kiefer's theorem, FJN Theorem
    1.30, Corollary 1.31 and the 4-distributive law), `Quotient`, `Interval`,
-   `Product` (finite products), `Modular` with `Modular.Dedekind` and
+   `Dual` (the dual lattice), `FilterIdeal` (principal filters and ideals,
+   and their union), `OrdinalSum` (the glued ordinal sum), `Product` (binary
+   and finite products), `Modular` with `Modular.Dedekind` and
    `Modular.Birkhoff` (the modular and distributive laws, and the `N₅` and
-   `M₃` criteria), and `Central` with `Central.Decomposition` (neutral and
-   central elements, and direct decompositions by central elements).
+   `M₃` criteria), `Distributive` with `Distributive.Theory`,
+   `Distributive.Bundle` and `Distributive.Small` (distributive lattices as a
+   structure, its equational theory, its bridge to the standard library's
+   bundle, and the structure at the lowest universe level), and `Central`
+   with `Central.Decomposition` (neutral and central elements, and direct
+   decompositions by central elements).
 +  **Bounded lattices and Kostinsky's theorem**.  `Bounded.Homomorphism`
    (bounded homomorphisms), `Bounded.Covers` (join covers and the sets
    `D_k(L)`), `Bounded.Preimage` (FJN Theorem 2.6 and Lemma 2.7),
@@ -148,7 +154,9 @@ Every module is under `src/Lattices/`; names below drop the common prefix
    `WhitmanTable` (FJN Example 11.32), `M3`, `N5`, `Mn`, `Partitions` (the
    partition lattices of three and four elements), `TwoByThree`,
    `SublatticesOfFree` (which five-element lattices are sublattices of a free
-   lattice) and `Central`.
+   lattice), `Central`, `L2Distributive` (the two-element lattice as a
+   distributive lattice) and `L3Heyting` (the three-element chain as a
+   Heyting algebra).
 
 A module whose own check takes three seconds or more says so in its front
 matter (`check-cost: heavy`) and states its cost in its prose; no barrel
@@ -160,7 +168,9 @@ The library's first modules, on lattice terms, Whitman's solution of the word
 problem, the free lattice, canonical forms, semidistributivity, substitutions,
 free generating sets, embeddings and table lattices, were first written in the
 [Agda Universal Algebra Library][agda-algebras], and moved out of it in October
-2026; the others were written since.
+2026; so were the dual lattice, filters and ideals, ordinal sums, binary
+products, and distributive lattices with their two examples, written there
+between May and August 2026.  The others were written since.
 
 ## License and citation
 
