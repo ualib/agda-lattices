@@ -27,17 +27,17 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1792819831,
-        "narHash": "sha256-sHmxjbFfvCIw3OcWn9yn/Trz8wHwQgD3CECgqqFMUYM=",
+        "lastModified": 1792871332,
+        "narHash": "sha256-UWmJixVpkmw+LuN3DjUpMWFYz0sM82Q52LcJd0wPQSE=",
         "owner": "ualib",
         "repo": "agda-algebras",
-        "rev": "4fc71f81a17eb66516f632e6a6edb7ebfed2a1a0",
+        "rev": "b4d0ab6cd9a6e32f28857bd5014bbacaa284bb35",
         "type": "github"
       },
       "original": {
         "owner": "ualib",
         "repo": "agda-algebras",
-        "rev": "4fc71f81a17eb66516f632e6a6edb7ebfed2a1a0",
+        "rev": "b4d0ab6cd9a6e32f28857bd5014bbacaa284bb35",
         "type": "github"
       }
     },

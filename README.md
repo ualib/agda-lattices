@@ -54,7 +54,7 @@ Library that this library imports, and keeps their interface files under
 `flake.lock` pins every input, as follows:
 
 +  the [Agda Universal Algebra Library][agda-algebras] at commit
-   [`4fc71f81`][algebras-pin] of its master branch, pinned in `flake.nix`
+   [`b4d0ab6c`][algebras-pin] of its master branch, pinned in `flake.nix`
    itself as well;
 +  Agda 2.9.0, a pre-release built from [agda/agda][] at commit
    [`da66a8c7`][agda-pin], and the [Agda standard library][agda-stdlib] 2.3
@@ -187,7 +187,7 @@ statement and proof.
 
 [Agda]: https://wiki.portal.chalmers.se/agda/
 [agda-algebras]: https://github.com/ualib/agda-algebras
-[algebras-pin]: https://github.com/ualib/agda-algebras/tree/4fc71f81a17eb66516f632e6a6edb7ebfed2a1a0
+[algebras-pin]: https://github.com/ualib/agda-algebras/tree/b4d0ab6cd9a6e32f28857bd5014bbacaa284bb35
 [agda/agda]: https://github.com/agda/agda
 [agda-pin]: https://github.com/agda/agda/tree/da66a8c75f11d10699a6b38b261efdf244b66f2a
 [agda-stdlib]: https://github.com/agda/agda-stdlib
