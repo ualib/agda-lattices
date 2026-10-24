@@ -9,7 +9,7 @@
 # Pinning:
 #
 #   +  agda-algebras is a flake input, pinned in its URL and by flake.lock at
-#      commit 922d138b of its master branch.
+#      commit 4fc71f81 of its master branch.
 #   +  The Agda is the one agda-algebras exports (`packages.<system>.default`):
 #      a pre-release Agda 2.9.0 built from agda/agda by Agda's own flake, with
 #      the standard library 2.3 patched to check under it.  Neither comes from
@@ -42,7 +42,7 @@
   description = "agda-lattices: lattice theory in Agda, on top of the Agda Universal Algebra Library";
 
   inputs = {
-    agda-algebras.url = "github:ualib/agda-algebras/922d138b22c6d0ab6db5245b1760a4c2595d7525";
+    agda-algebras.url = "github:ualib/agda-algebras/4fc71f81a17eb66516f632e6a6edb7ebfed2a1a0";
     nixpkgs.follows = "agda-algebras/nixpkgs";
   };
 
