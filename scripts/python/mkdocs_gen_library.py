@@ -234,14 +234,16 @@ def main() -> None:
     library = modules_under(SRC_DIR, (".lagda.md",))
     highlight = AGDA_MD_DIR.is_dir()
 
-    algebras: set[str] = set()
-    if highlight:
-        if not ALGEBRAS_SRC.is_dir():
-            # A link into agda-algebras cannot be told from a link into the
-            # standard library without its sources, so refuse to guess.
-            raise PluginError(f"{ALGEBRAS_SRC} not found: run the build inside "
-                              "`nix develop`, which copies the pinned agda-algebras")
-        algebras = modules_under(ALGEBRAS_SRC, (".lagda.md", ".agda"))
+    # agda-algebras' modules, which both Agda outputs need: a highlighted
+    # page's links into them go to the sibling site, and their pages are
+    # left out of /classic/.  Without the sources neither can be told from
+    # the standard library, so a build that has either output refuses to
+    # guess.
+    if (highlight or CLASSIC_DIR.is_dir()) and not ALGEBRAS_SRC.is_dir():
+        raise PluginError(f"{ALGEBRAS_SRC} not found: run the build inside "
+                          "`nix develop`, which copies the pinned agda-algebras")
+    algebras = (modules_under(ALGEBRAS_SRC, (".lagda.md", ".agda"))
+                if ALGEBRAS_SRC.is_dir() else set())
 
     mode = ("highlighted (agda --html)" if highlight
             else "plain (no agda --html; run `make site-full` for highlighting)")
