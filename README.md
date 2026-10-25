@@ -15,6 +15,10 @@ distributive lattices, central elements and direct decompositions, finite
 products, lattices given by their operation tables, and worked examples.
 Every module is checked by Agda under `--without-K --exact-split --safe`.
 
+The library's [documentation site][site] renders every module with Agda's
+highlighting, every name a link to its definition, on that site or on the
+[site of the Agda Universal Algebra Library][algebras-site].
+
 The reference throughout is R. Freese, J. Ježek and J. B. Nation, *Free
 Lattices*, Mathematical Surveys and Monographs 42, American Mathematical
 Society, 1995 (FJN below), cited by theorem number.
@@ -66,6 +70,13 @@ Library that this library imports, and keeps their interface files under
 `agda` wrapper that names the standard library, the Agda Universal Algebra
 Library and this library explicitly, so nothing in your own Agda
 configuration takes part.
+
+### The site
+
+`nix develop --command make site-full` builds the documentation site into
+`site/` (`make serve` previews it), by the pipeline of the Agda Universal
+Algebra Library's site and in its theme; `mkdocs.yml` and the Makefile say
+how, and `NOTICE` what is taken from that library.
 
 ## What is checked
 
@@ -187,9 +198,11 @@ statement and proof.
 
 [Agda]: https://wiki.portal.chalmers.se/agda/
 [agda-algebras]: https://github.com/ualib/agda-algebras
+[algebras-site]: https://agda-algebras.universalalgebra.org/
 [algebras-pin]: https://github.com/ualib/agda-algebras/tree/b4d0ab6cd9a6e32f28857bd5014bbacaa284bb35
 [agda/agda]: https://github.com/agda/agda
 [agda-pin]: https://github.com/agda/agda/tree/da66a8c75f11d10699a6b38b261efdf244b66f2a
 [agda-stdlib]: https://github.com/agda/agda-stdlib
 [Cachix]: https://www.cachix.org/
 [Nix]: https://nixos.org/
+[site]: https://ualib.github.io/agda-lattices/

@@ -1,0 +1,267 @@
+/* ==========================================================================
+   File: docs/stylesheets/site.css
+
+   This site's own components, on the tokens of tokens.css: the landing
+   page's hero and cards, the navigation's section cue, and the controls the
+   site's scripts add to Agda's code (the copy button, the hidden
+   scaffolding and its "Show all Agda" switch).
+
+   Not part of the shareable theme, which is copied from the Agda Universal
+   Algebra Library's site unchanged (mkdocs.yml, `make theme-check`).  The
+   rules of sections 1b, 2 and 3 are that site's own (its site.css, sections
+   1, 2 and 4, at the commit THEME_REV names in the Makefile), taken as they
+   stand because this site runs the same two scripts on the same markup,
+   less the Tooltips switch's icon (this site has no tooltips), and with
+   their comments reworded where they named the sibling's issues or its
+   tooltips.
+   Section 1a is this site's.  Like the shareable files, this one names no
+   raw color.
+
+   Sections:
+     1.  Landing page: (a) the hero, (b) Material's card grid.
+     2.  Navigation.
+     3.  Controls on Agda's code: the copy button, the hidden scaffolding,
+         and the header switch.
+   ========================================================================== */
+
+/* -- 1a. Landing page: the hero ----------------------------------------------
+   As on the sibling site: set on the page, not in a colored panel, a display
+   title, the claim in the muted gray, and the actions; a hairline closes it
+   off from what follows. */
+.md-typeset .lattices-hero {
+  text-align: center;
+  padding: var(--space-12) 0 var(--space-8);
+  margin: 0 0 var(--space-8);
+  border-bottom: var(--border-width) solid var(--c-line);
+}
+
+.md-typeset .lattices-hero h1 {
+  font-size: calc(var(--type-h1) * 1.2);
+  margin: 0 auto var(--space-4);
+}
+
+.md-typeset .lattices-hero .lattices-tagline {
+  color: var(--c-fg-muted);
+  max-width: var(--measure);
+  margin: 0 auto var(--space-6);
+}
+
+@media screen and (max-width: 44.9375em) {
+  .md-typeset .lattices-hero h1 {
+    font-size: var(--type-h1);
+  }
+}
+
+.md-typeset .lattices-cta {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.md-typeset .lattices-cta .md-button {
+  margin: 0;
+}
+
+/* -- 1b. Landing page: Material's card grid ----------------------------------
+   Material's card grid (`<div class="grid cards">`), on the card surface
+   with a hairline that darkens under the pointer; no lift, no shadow. */
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid > .card {
+  background-color: var(--c-bg-raised);
+  border: var(--border-width) solid var(--c-line);
+  border-radius: var(--radius-md);
+  box-shadow: none;
+  transition: border-color var(--motion-quick);
+}
+
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid.cards > ul > li:focus-within,
+.md-typeset .grid > .card:hover {
+  border-color: var(--c-line-strong);
+  box-shadow: none;
+}
+
+.md-typeset .grid.cards > ul > li > hr {
+  border-bottom-color: var(--c-line);
+  margin: var(--space-3) 0;
+}
+
+/* -- 2. Navigation ------------------------------------------------------------
+   A clickable section-index page (a barrel module) carries a small weight
+   cue that it is an overview of what sits under it. */
+.md-nav__item--section > .md-nav__link {
+  font-weight: var(--strong-weight);
+}
+
+/* -- 3. Controls on Agda's code -------------------------------------------------
+   The copy button docs/assets/js/agda-copy.js adds to each highlighted
+   block: Material's content.code.copy reaches only its own `.highlight`
+   blocks, and the agda --html output is a bare `<pre class="Agda">`.  Quiet
+   until the block is hovered or the button has keyboard focus. */
+.md-typeset pre.Agda {
+  position: relative;
+}
+
+.ualib-agda-copy {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  width: 1.6em;
+  height: 1.6em;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: var(--border-width) solid var(--c-line);
+  border-radius: var(--radius-md);
+  background-color: var(--c-bg-raised);
+  color: var(--c-fg-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--motion-quick), color var(--motion-quick),
+              border-color var(--motion-quick);
+}
+
+.md-typeset pre.Agda:hover .ualib-agda-copy,
+.ualib-agda-copy:focus-visible { opacity: 1; }
+.ualib-agda-copy:hover { color: var(--c-accent-hover); border-color: var(--c-accent-hover); }
+.ualib-agda-copy svg { width: 0.95em; height: 0.95em; }
+.ualib-agda-copy.ualib-copied { color: var(--c-accent); border-color: var(--c-accent); }
+
+/* "Show all Agda".  Module sources wrap their leading
+   OPTIONS, module and import scaffolding in HTML comments, and
+   mkdocs_gen_library.py re-surfaces those blocks tagged `hidden-source`:
+   `<pre class="Agda">` on the highlighted path, a fenced block inside a
+   `<div>` on the plain path.  They stay hidden until
+   docs/assets/js/agda-toggle.js puts `reveal-agda-source` on <body>, a
+   global choice persisted in localStorage like the palette toggle. */
+.md-typeset pre.Agda.hidden-source,
+.md-typeset div.hidden-source {
+  display: none;
+}
+
+body.reveal-agda-source .md-typeset pre.Agda.hidden-source,
+body.reveal-agda-source .md-typeset div.hidden-source {
+  display: block;
+}
+
+/* Click-to-definition must keep working while the scaffolding is hidden:
+   the binders a `private variable` block introduces live inside it.  When
+   the URL fragment targets an anchor in a hidden block, the block shows, so
+   the browser can scroll to it. */
+.md-typeset pre.Agda.hidden-source:has(:target),
+.md-typeset div.hidden-source:has(:target) {
+  display: block;
+}
+
+/* A block revealed locally by its own `▸ hidden code (n lines)` note. */
+.md-typeset pre.Agda.hidden-source.revealed,
+.md-typeset div.hidden-source.revealed {
+  display: block;
+}
+
+/* The marker itself: small and quiet, where the hidden block would be, so a
+   page never looks silently truncated; redundant, and hidden, while the
+   global switch already shows everything. */
+.md-typeset .ualib-hidden-note {
+  display: block;
+  margin: var(--space-3) 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--c-fg-muted);
+  font-family: var(--font-mono), monospace;
+  font-size: var(--type-small);
+  cursor: pointer;
+}
+
+.md-typeset .ualib-hidden-note:hover {
+  color: var(--c-accent-hover);
+}
+
+body.reveal-agda-source .md-typeset .ualib-hidden-note {
+  display: none;
+}
+
+/* The header switch (agda-toggle.js "Show all Agda").  A label and an
+   icon, then a track whose thumb slides right
+   and takes the accent when the feature is on; `role="switch"` and
+   aria-checked carry the state.  `currentColor` is the header's text color,
+   so the off track reads in both schemes. */
+.ualib-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  flex-shrink: 0;
+  padding: 0.2em 0.4em;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--type-ui);
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ualib-switch__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+}
+
+.ualib-switch__track {
+  position: relative;
+  flex-shrink: 0;
+  width: 1.85em;
+  height: 1.02em;
+  border-radius: 999px;
+  background-color: color-mix(in srgb, currentColor 24%, transparent);
+  transition: background-color var(--motion-quick);
+}
+
+.ualib-switch__thumb {
+  position: absolute;
+  top: 50%;
+  left: 0.13em;
+  width: 0.76em;
+  height: 0.76em;
+  border-radius: 50%;
+  background-color: var(--c-bg);
+  transform: translateY(-50%);
+  transition: transform var(--motion-quick);
+}
+
+.ualib-switch[aria-checked="true"] .ualib-switch__track {
+  background-color: var(--c-accent);
+}
+
+.ualib-switch[aria-checked="true"] .ualib-switch__thumb {
+  transform: translate(0.83em, -50%);
+}
+
+.ualib-switch:hover .ualib-switch__track {
+  background-color: color-mix(in srgb, currentColor 36%, transparent);
+}
+
+.ualib-switch[aria-checked="true"]:hover .ualib-switch__track {
+  background-color: var(--c-accent-hover);
+}
+
+.ualib-switch:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-md);
+}
+
+.agda-logo-icon { width: 1.15em; height: 1.15em; }
+
+/* On narrow headers (menu, title, palette, search) an unshrinkable control
+   would crush the page title, so the switch leaves below the breakpoint
+   at which Material hides its repository chip.  Phones keep the defaults,
+   which is the right reading mode there anyway. */
+@media screen and (max-width: 59.9844em) {
+  .ualib-switch {
+    display: none;
+  }
+}

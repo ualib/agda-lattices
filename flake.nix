@@ -18,7 +18,8 @@
 #      Agda from source takes about an hour; the public Cachix cache
 #      `formalverification` holds it (see the README).
 #   +  nixpkgs follows agda-algebras' own pin and supplies the rest of the
-#      shell: make and git.
+#      shell: make, git, and the Python of the documentation site (MkDocs,
+#      Material at a stated version, and the plugins; see below).
 #
 # Library resolution:
 #
@@ -62,6 +63,39 @@
       # The Agda environment agda-algebras exports: Agda 2.9.0 with the
       # patched standard library 2.3 registered in its own library file.
       mkAgdaEnv = system: agda-algebras.packages.${system}.default;
+
+      # The documentation site's Python: MkDocs, Material and the plugins the
+      # pipeline uses (mkdocs.yml).  One withPackages environment, since two
+      # on the same PATH shadow each other rather than merge.  `make site`
+      # and `make site-full` run in it.
+      #
+      # Material is pinned at the version agda-algebras' site pins, so that
+      # the theme files copied from that site (docs/stylesheets/, overrides/)
+      # render here as they do there, and so that `nix flake update` cannot
+      # move the theme as a side effect.  To move it, change materialVersion
+      # and materialHash together, after agda-algebras has moved (`nix store
+      # prefetch-file` on the sdist URL prints the hash).  The PyPI sdist
+      # carries the prebuilt `material/` tree, so the override is a
+      # pure-Python build of seconds.
+      materialVersion = "9.7.6";
+      materialHash = "sha256-AL3eUFdPd20yixhi/mXa6vWB7DCb0VD3v/NFoJjGSmk=";
+      mkMaterial = p: p.mkdocs-material.overridePythonAttrs (_: {
+        version = materialVersion;
+        src = p.fetchPypi {
+          pname = "mkdocs_material";
+          version = materialVersion;
+          hash = materialHash;
+        };
+      });
+
+      mkPythonEnv = pkgs: pkgs.python3.withPackages (p: [
+        p.mkdocs                  # static-site generator
+        (mkMaterial p)            # Material theme, pinned above
+        p.mkdocs-gen-files        # mount src/**/*.lagda.md as site pages
+        p.mkdocs-literate-nav     # the module tree from a generated SUMMARY.md
+        p.mkdocs-section-index    # clickable section pages (the barrels)
+        p.pymdown-extensions      # snippets (docs/_links.md on every page)
+      ]);
 
       # Project-local AGDA_DIR, the agda-algebras copy, and an agda wrapper
       # that passes --library-file again after the Nix wrapper's own (Agda's
@@ -118,12 +152,16 @@ EOF
       devShells = forAllSystems ({ system, pkgs }:
         let
           agdaEnv = mkAgdaEnv system;
+          pythonEnv = mkPythonEnv pkgs;
+          mkdocsVer = pkgs.python3Packages.mkdocs.version;
+          materialVer = (mkMaterial pkgs.python3Packages).version;
         in {
           default = pkgs.mkShell {
             name = "agda-lattices-dev";
 
             packages = [
               agdaEnv
+              pythonEnv
               pkgs.gnumake
               pkgs.git
             ];
@@ -139,6 +177,7 @@ EOF
               echo "   Agda          : ${agdaEnv.version}    ($(agda --version 2>/dev/null | head -n1))"
               echo "   stdlib        : $(cat "${agdaEnv.libraryFile}")"
               echo "   agda-algebras : $ALGEBRAS"
+              echo "   MkDocs        : ${mkdocsVer} + Material ${materialVer}  (make site / make site-full)"
               echo "   AGDA_DIR      : $AGDA_DIR"
               echo ""
 

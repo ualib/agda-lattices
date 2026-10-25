@@ -1,0 +1,179 @@
+# =============================================================================
+#  site.yml: build the documentation site, and deploy it from main
+#  ----------------------------------------------------------------------------
+#
+#  The site is built by `nix develop --command make site-full`, the command a
+#  reader runs locally (mkdocs.yml), and checked as follows:
+#
+#    + make site-test      the site tools' own tests;
+#    + make site-check     every link and asset of every page names a file
+#                          and an id that exist, no page or stylesheet
+#                          requests anything from another origin, and every
+#                          reference-style link of the prose is defined;
+#    + make sibling-links  every link to agda-algebras.universalalgebra.org
+#                          names a page that exists there, and every anchor
+#                          the definition it names in this build;
+#    + make theme-check    the theme's files match agda-algebras at
+#                          THEME_REV (the Makefile).
+#
+#  The last two read another site, so they run on a schedule as well: the
+#  sibling site deploys from its own master, and an anchor into it moves
+#  when that site does, with no commit here.  A failure there is fixed by
+#  moving this repository's agda-algebras pin.  Those two run in a job of
+#  their own (`outside`), which the deploy does not wait for, since the
+#  pages already live link the sibling site the same way.
+#
+#  Pull requests build and check; a push to main also deploys, by GitHub
+#  Pages' Actions deployment.  The address comes from Pages itself
+#  (actions/configure-pages reports it, a custom domain included), so
+#  adopting a domain needs no change here: set it under Settings, Pages,
+#  and the next deploy uses it.
+#
+#  The Agda is a pre-release 2.9.0 that agda-algebras' flake builds from
+#  source; as in check.yml, the job reads the public Cachix cache
+#  `formalverification` (never writing) and caches this library's
+#  interfaces and the agda-algebras copy.
+# =============================================================================
+
+name: site
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "17 6 * * 1"            # Mondays: the sibling site may have moved
+  workflow_dispatch:
+
+# A newer push to a pull request cancels the older run; on main, runs queue,
+# so a deploy in progress is never cancelled and deploys land in order.
+concurrency:
+  group: site-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and check the site
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    # The address the site was built for, which the `outside` job's checks
+    # must read the built pages against (the 404 page's links carry its path).
+    outputs:
+      site_url: ${{ steps.pages.outputs.base_url && format('{0}/', steps.pages.outputs.base_url) || '' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+
+      - name: Read the formalverification cache (the pre-release Agda)
+        uses: cachix/cachix-action@v17
+        with:
+          name: formalverification
+          skipPush: true
+
+      - name: Cache Agda interface files and the agda-algebras copy
+        uses: actions/cache@v4
+        with:
+          path: |
+            _build/
+            .deps/
+          key: agdai-${{ runner.os }}-${{ hashFiles('flake.lock') }}-${{ hashFiles('src/**/*.lagda.md', 'src/**/*.agda', 'agda-lattices.agda-lib') }}
+          restore-keys: |
+            agdai-${{ runner.os }}-${{ hashFiles('flake.lock') }}-
+
+      # The address the site will be served at, as Pages reports it; only on
+      # a deploy, since a pull request has no Pages context.
+      - name: Read the Pages address
+        id: pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/configure-pages@v5
+
+      - name: The site tools' tests
+        run: nix develop --command make site-test
+
+      - name: Build the site
+        env:
+          SITE_URL: ${{ steps.pages.outputs.base_url && format('{0}/', steps.pages.outputs.base_url) || '' }}
+        run: |
+          set -euxo pipefail
+          if [ -z "$SITE_URL" ]; then unset SITE_URL; fi
+          nix develop --command make site-full
+
+      - name: Check the built site
+        env:
+          SITE_URL: ${{ steps.pages.outputs.base_url && format('{0}/', steps.pages.outputs.base_url) || '' }}
+        run: |
+          set -euxo pipefail
+          if [ -z "$SITE_URL" ]; then unset SITE_URL; fi
+          nix develop --command make site-check
+          test -z "$(git status --porcelain)"
+
+      - name: Upload the site for Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+
+      # For the checks against other sites, which run in a job of their own
+      # so that they never hold back a deploy (the header says why).
+      - name: Keep the site and the Agda render for those checks
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-site
+          path: |
+            site/
+            .agda-html/md/
+          include-hidden-files: true
+          retention-days: 3
+
+  outside:
+    name: Check the links into the sibling site, and the theme
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Fetch the built site
+        uses: actions/download-artifact@v4
+        with:
+          name: built-site
+
+      - name: Install Nix (theme-check fetches agda-algebras through it)
+        uses: cachix/install-nix-action@v31
+
+      # Both checks are standard-library Python, so the runner's python3 runs
+      # them without the dev shell.
+      - name: The links into the sibling site
+        env:
+          SITE_URL: ${{ needs.build.outputs.site_url }}
+        run: |
+          set -euxo pipefail
+          if [ -z "$SITE_URL" ]; then unset SITE_URL; fi
+          make sibling-links
+
+      - name: The theme against agda-algebras
+        run: make theme-check
+
+  deploy:
+    name: Deploy to GitHub Pages
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

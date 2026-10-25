@@ -1,0 +1,249 @@
+---
+title: Lattice theory in Agda
+hide:
+  - navigation
+  - toc
+---
+
+<div class="lattices-hero" markdown>
+
+# agda-lattices
+
+<p class="lattices-tagline" markdown>
+Lattice theory in [Agda][], on top of the [Agda Universal Algebra Library][],
+after Freese, Ježek and Nation's *Free Lattices*.  Every module is checked by
+Agda under `--without-K --exact-split --safe`.
+</p>
+
+<div class="lattices-cta" markdown>
+[Browse the library](Lattices/Free.md){ .md-button .md-button--primary }
+[Check it yourself](#checking-it){ .md-button }
+[:fontawesome-brands-github: GitHub][repository]{ .md-button }
+</div>
+
+</div>
+
+## What it is
+
+agda-lattices is a library of general lattice theory, written in literate
+Agda.  It covers free lattices (lattice terms, Whitman's solution of the word
+problem, the free lattice and its universal property, canonical forms,
+Whitman's condition and semidistributivity, substitutions, free generating
+sets, embeddings and complexity, Whitman's countable family, and the
+polynomial-time decision of the order), free generation and breadth in
+lattices satisfying Whitman's condition, Nation's theorem and its proof for
+finite lattices, bounded homomorphisms, projective lattices and Kostinsky's
+theorem, quotients, intervals, modular and distributive lattices, central
+elements and direct decompositions, finite products, lattices given by their
+operation tables, and worked examples.
+
+The reference throughout is R. Freese, J. Ježek and J. B. Nation, *Free
+Lattices*, Mathematical Surveys and Monographs 42, American Mathematical
+Society, 1995 ([Freese, Ježek, and Nation (1995)][]; FJN below), cited by
+theorem number.  The library is built on the algebras, terms, homomorphisms
+and congruences of the [Agda Universal Algebra Library][].
+
+!!! note "Reading the code"
+
+    Every page is rendered from the literate source that Agda checks, so the
+    proof you read is the proof that compiles.  In the code blocks every
+    token is colored by its role and links to its definition: on this site
+    for the library's own names, on the [Agda Universal Algebra Library's
+    site][sibling] for its names, and among the standard library's
+    pages for the rest.  Each module's import scaffolding is folded away;
+    the **Show all Agda** switch in the header shows it.
+
+<div class="grid cards" markdown>
+
++   :material-graph-outline:{ .lg .middle } &nbsp; **Free lattices**
+
+    ---
+
+    Lattice terms, Whitman's solution of the word problem and its decision,
+    the free lattice `FL(X)` and its universal property, canonical forms.
+
+    [:octicons-arrow-right-24: Lattices.Free][Lattices.Free]
+
++   :material-vector-triangle:{ .lg .middle } &nbsp; **Nation's theorem**
+
+    ---
+
+    Nation's argument of FJN Section V.3, on finite lattices given by their
+    operation tables.
+
+    [:octicons-arrow-right-24: Lattices.Nation][Lattices.Nation]
+
++   :material-arrow-collapse-down:{ .lg .middle } &nbsp; **Kostinsky's theorem**
+
+    ---
+
+    Bounded homomorphisms, projective lattices, and the equivalence for a
+    finitely generated lattice.
+
+    [:octicons-arrow-right-24: Lattices.Kostinsky][Lattices.Kostinsky]
+
++   :material-cube-outline:{ .lg .middle } &nbsp; **The sibling library**
+
+    ---
+
+    The Agda Universal Algebra Library: signatures, algebras,
+    homomorphisms, terms, varieties, and Birkhoff's HSP theorem.
+
+    [:octicons-arrow-right-24: agda-algebras][sibling]
+
+</div>
+
+## The modules
+
+Every module is under `Lattices`; the names below drop that prefix.  The
+navigation lists the same modules as a tree.
+
++  **Free lattices**.  [Free][Lattices.Free] is the barrel of the free-lattice
+   modules: [Free.Term][Lattices.Free.Term] (lattice terms),
+   [Free.Whitman][Lattices.Free.Whitman] (Whitman's rules and their
+   decision), [Free.Universal][Lattices.Free.Universal] (the free lattice
+   `FL(X)`, soundness and completeness of the rules, FJN Theorems 1.8 and
+   1.11, and the universal property),
+   [Free.Derivability][Lattices.Free.Derivability] (equational logic),
+   [Free.Duality][Lattices.Free.Duality],
+   [Free.Canonical][Lattices.Free.Canonical] with
+   [Basic][Lattices.Free.Canonical.Basic],
+   [Algorithm][Lattices.Free.Canonical.Algorithm],
+   [Uniqueness][Lattices.Free.Canonical.Uniqueness],
+   [Joinands][Lattices.Free.Canonical.Joinands],
+   [Recognition][Lattices.Free.Canonical.Recognition],
+   [Minimality][Lattices.Free.Canonical.Minimality] and
+   [JoinIrreducible][Lattices.Free.Canonical.JoinIrreducible] (canonical
+   forms, FJN Theorems 1.17 to 1.20),
+   [Free.Semidistributive][Lattices.Free.Semidistributive] (FJN Theorems 1.8
+   and 1.21 for `FL(X)`), [Free.Substitution][Lattices.Free.Substitution]
+   (substitutions and the homomorphisms they induce),
+   [Free.Generation][Lattices.Free.Generation] (free generating sets, FJN
+   Corollaries 1.6 and 1.13, decided),
+   [Free.Embedding][Lattices.Free.Embedding] (FJN Lemma 9.13 and its dual),
+   [Free.Complexity][Lattices.Free.Complexity] (the complexity of an element,
+   never lowered by an embedding),
+   [Free.WhitmanPolynomials][Lattices.Free.WhitmanPolynomials],
+   [Free.FixedPointFree][Lattices.Free.FixedPointFree],
+   [Free.WhitmanChains][Lattices.Free.WhitmanChains] and
+   [Free.Countable][Lattices.Free.Countable] (Whitman's countable family, FJN
+   Theorems 1.23 to 1.29),
+   [Free.Whitman.Polynomial][Lattices.Free.Whitman.Polynomial] (the order
+   decided in polynomial time, FJN Chapter XI, Section 8) and
+   [Free.Bounded][Lattices.Free.Bounded] (homomorphisms into a free lattice
+   are bounded, Kostinsky's Lemma 3.1).
++  **Any lattice**.  [Semidistributive][Lattices.Semidistributive] and
+   [Semidistributive.FiniteJoins][Lattices.Semidistributive.FiniteJoins] (the
+   semidistributive laws and Whitman's condition, FJN Theorem 1.21),
+   [Generation][Lattices.Generation] (free generation in a lattice satisfying
+   Whitman's condition, FJN Corollary 1.12), [Breadth][Lattices.Breadth]
+   (Jónsson and Kiefer's theorem, FJN Theorem 1.30, Corollary 1.31 and the
+   4-distributive law), [Quotient][Lattices.Quotient],
+   [Interval][Lattices.Interval], [Dual][Lattices.Dual] (the dual lattice),
+   [FilterIdeal][Lattices.FilterIdeal] (principal filters and ideals, and
+   their union), [OrdinalSum][Lattices.OrdinalSum] (the glued ordinal sum),
+   [Product][Lattices.Product] (binary and finite products),
+   [Modular][Lattices.Modular] with [Modular.Dedekind][Lattices.Modular.Dedekind]
+   and [Modular.Birkhoff][Lattices.Modular.Birkhoff] (the modular and
+   distributive laws, and the `N₅` and `M₃` criteria),
+   [Distributive][Lattices.Distributive] with
+   [Distributive.Theory][Lattices.Distributive.Theory],
+   [Distributive.Bundle][Lattices.Distributive.Bundle] and
+   [Distributive.Small][Lattices.Distributive.Small] (distributive lattices as
+   a structure, its equational theory, its bridge to the standard library's
+   bundle, and the structure at the lowest universe level), and
+   [Central][Lattices.Central] with
+   [Central.Decomposition][Lattices.Central.Decomposition] (neutral and
+   central elements, and direct decompositions by central elements).
++  **Bounded lattices and Kostinsky's theorem**.
+   [Bounded.Homomorphism][Lattices.Bounded.Homomorphism] (bounded
+   homomorphisms), [Bounded.Covers][Lattices.Bounded.Covers] (join covers and
+   the sets `D_k(L)`), [Bounded.Preimage][Lattices.Bounded.Preimage] (FJN
+   Theorem 2.6 and Lemma 2.7), [Bounded.Sublattice][Lattices.Bounded.Sublattice]
+   (FJN Corollaries 2.15 and 2.16), [Bounded.Finite][Lattices.Bounded.Finite]
+   (the D relation and lower boundedness of a finite lattice, FJN Corollary
+   2.39), [Projective][Lattices.Projective] (projective lattices, FJN Theorem
+   5.1), [Kostinsky][Lattices.Kostinsky] (Kostinsky's theorem: for a finitely
+   generated lattice, projective, sublattice of a free lattice, and bounded
+   with Whitman's condition are equivalent) and
+   [Kostinsky.Finite][Lattices.Kostinsky.Finite] (its finite case on table
+   lattices).
++  **Nation's theorem**.  [Nation][Lattices.Nation] states FJN Theorem 5.55 (a
+   finite lattice is a sublattice of a free lattice if and only if it is
+   semidistributive and satisfies Whitman's condition) as a hypothesis, with
+   its easy direction proved; [Nation.Order][Lattices.Nation.Order],
+   [Nation.Kappa][Lattices.Nation.Kappa], [Nation.Cycle][Lattices.Nation.Cycle],
+   [Nation.Bounded][Lattices.Nation.Bounded],
+   [Nation.Configurations][Lattices.Nation.Configurations],
+   [Nation.BType][Lattices.Nation.BType],
+   [Nation.Lemma542][Lattices.Nation.Lemma542],
+   [Nation.Subsequences][Lattices.Nation.Subsequences],
+   [Nation.Lemma547][Lattices.Nation.Lemma547],
+   [Nation.Lemma548][Lattices.Nation.Lemma548],
+   [Nation.Extension][Lattices.Nation.Extension],
+   [Nation.Lemma551][Lattices.Nation.Lemma551],
+   [Nation.Alternating][Lattices.Nation.Alternating],
+   [Nation.NoCycle][Lattices.Nation.NoCycle] and
+   [Nation.Lemma554][Lattices.Nation.Lemma554] follow Nation's argument of
+   FJN Section V.3 on table lattices, to its conclusion that a finite lattice
+   with both semidistributive laws and Whitman's condition has no C-cycle and
+   is bounded.
++  **Table lattices**.  [Table][Lattices.Table] builds a finite lattice on
+   `Fin n` from its operation tables.
++  **Worked examples**, under `Examples`:
+   [FreeLattice3][Lattices.Examples.FreeLattice3],
+   [CountableFree][Lattices.Examples.CountableFree],
+   [WhitmanTable][Lattices.Examples.WhitmanTable] (FJN Example 11.32),
+   [M3][Lattices.Examples.M3], [N5][Lattices.Examples.N5],
+   [Mn][Lattices.Examples.Mn], [Partitions][Lattices.Examples.Partitions]
+   (the partition lattices of three and four elements),
+   [TwoByThree][Lattices.Examples.TwoByThree],
+   [SublatticesOfFree][Lattices.Examples.SublatticesOfFree] (which
+   five-element lattices are sublattices of a free lattice),
+   [Central][Lattices.Examples.Central],
+   [L2Distributive][Lattices.Examples.L2Distributive] (the two-element
+   lattice as a distributive lattice) and
+   [L3Heyting][Lattices.Examples.L3Heyting] (the three-element chain as a
+   Heyting algebra).
+
+## What is checked
+
+Every module carries the pragma
+`{-# OPTIONS --without-K --exact-split --safe #-}`.  Under `--safe` Agda
+refuses postulates, unsafe primitives and non-terminating definitions, so
+every theorem is proved from the type theory alone.  A worked example may
+add `--lossy-unification`, which `--safe` accepts;
+[Examples.Central][Lattices.Examples.Central] uses it, and says why.
+
+A statement proved by induction is checked when its proof term has the
+stated type.  A statement about explicit terms or finite lattices is checked
+by computation: Whitman's procedure is a decision `s ≤ʷ? t`, the properties
+of a lattice given by its tables are decided, and Agda evaluates the decision
+while it checks the module.
+
+## Checking it
+
+The toolchain is a [Nix][] flake, so a machine with Nix 2.28 or later, with
+flakes enabled, needs nothing else:
+
+```sh
+git clone https://github.com/ualib/agda-lattices.git
+cd agda-lattices
+nix develop --command make check
+```
+
+`make check` checks every module's pragma, then type-checks every module
+under `src/`.  It exits 0 when every module checks; there is no separate
+test step, since type-checking is the test.  The Agda is a pre-release of
+Agda 2.9.0, which Nix builds from source in about an hour unless it can fetch
+it from the public binary cache `formalverification` on [Cachix][]; the
+[README][repository] says how to use it, and which commits of Agda, the
+standard library and the Agda Universal Algebra Library the flake pins.
+
+## Citing it
+
+The repository's `CITATION.cff` gives the metadata for citing the library,
+and GitHub's "Cite this repository" button formats it.  The library is
+licensed under the Apache License 2.0; its `NOTICE` records the attribution
+it carries from the Agda Universal Algebra Library, where its first modules
+were first written.

@@ -29,3 +29,9 @@ src/EverythingLattices.agda
 
 # -- Merge-conflict leftovers ------------------------------------------------------
 *.orig
+
+# -- The documentation site --------------------------------------------------------
+# agda --html output (make agda-md, make html) and the built site (make site).
+/.agda-html/
+/site/
+__pycache__/
