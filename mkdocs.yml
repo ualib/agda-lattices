@@ -150,7 +150,7 @@ plugins:
   # (but not inside a number like `5.55`), so a search for `Kostinsky` finds
   # `Lattices.Kostinsky.Finite`, and leaves a camel-cased name whole.
   - search:
-      separator: '[\s​\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;'
+      separator: '[\s\u200b\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;'
   - gen-files:
       scripts:
         - scripts/python/mkdocs_gen_library.py
