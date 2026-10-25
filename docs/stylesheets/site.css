@@ -11,8 +11,9 @@
    rules of sections 1b, 2 and 3 are that site's own (its site.css, sections
    1, 2 and 4, at the commit THEME_REV names in the Makefile), taken as they
    stand because this site runs the same two scripts on the same markup,
-   less the Tooltips switch's icon (this site has no tooltips) and with two
-   comments reworded.
+   less the Tooltips switch's icon (this site has no tooltips), and with
+   their comments reworded where they named the sibling's issues or its
+   tooltips.
    Section 1a is this site's.  Like the shareable files, this one names no
    raw color.
 
@@ -182,8 +183,8 @@ body.reveal-agda-source .md-typeset .ualib-hidden-note {
   display: none;
 }
 
-/* The header switches (agda-toggle.js "Show all Agda", agda-hover.js
-   "Tooltips").  A label and an icon, then a track whose thumb slides right
+/* The header switch (agda-toggle.js "Show all Agda").  A label and an
+   icon, then a track whose thumb slides right
    and takes the accent when the feature is on; `role="switch"` and
    aria-checked carry the state.  `currentColor` is the header's text color,
    so the off track reads in both schemes. */
@@ -256,7 +257,7 @@ body.reveal-agda-source .md-typeset .ualib-hidden-note {
 .agda-logo-icon { width: 1.15em; height: 1.15em; }
 
 /* On narrow headers (menu, title, palette, search) an unshrinkable control
-   would crush the page title, so both switches leave below the breakpoint
+   would crush the page title, so the switch leaves below the breakpoint
    at which Material hides its repository chip.  Phones keep the defaults,
    which is the right reading mode there anyway. */
 @media screen and (max-width: 59.9844em) {

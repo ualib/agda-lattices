@@ -36,5 +36,6 @@ Universal Algebra Library's site, in that site's theme, as follows:
      scripts/python/mkdocs_gen_library.py, mkdocs_hooks.py, gen_links.py and
      check_links.py, and mkdocs.yml; each file says what was changed.
   +  docs/stylesheets/site.css takes three of its sections from agda-algebras'
-     docs/stylesheets/site.css (CC BY 4.0, as above), unchanged; its header
-     says which.
+     docs/stylesheets/site.css (CC BY 4.0, as above), with the rule for the
+     Tooltips switch's icon left out and the comments that named that
+     site's issues or its tooltips reworded; its header says which.

@@ -106,7 +106,8 @@ theme:
     - content.tooltips
   # No Google Fonts: `false` removes the preconnect and the stylesheet link
   # Material emits otherwise; docs/assets/fonts/fonts.css declares the
-  # self-hosted faces.  `make offline-check` fails the build on a font link.
+  # self-hosted faces.  `make offline-check`, run on the built site after
+  # `mkdocs build` (locally and in CI), fails on a font link.
   font: false
   # Dark first, and no `media:` on either entry, as on the sibling site: the
   # first palette is the default, and the reader's choice is remembered.
