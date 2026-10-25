@@ -89,10 +89,13 @@ def iter_uses(text: str):
     in_comment = False
     for lineno, line in enumerate(text.splitlines(), 1):
         if in_comment:
-            if "-->" in line:
-                in_comment = False
-            continue
-        if FENCE.match(line):
+            if "-->" not in line:
+                continue
+            # Python-Markdown renders what follows the comment's close on its
+            # last line as prose, so scan it like any other line.
+            in_comment = False
+            line = line[line.index("-->") + 3:]
+        elif FENCE.match(line):
             in_fence = not in_fence
             continue
         if in_fence:

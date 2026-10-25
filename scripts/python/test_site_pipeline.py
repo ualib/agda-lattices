@@ -20,6 +20,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE / "theme"))
 
+import check_links as cl  # noqa: E402
 import check_site_links as csl  # noqa: E402
 import check_theme as ct  # noqa: E402
 import gen_links as gl  # noqa: E402
@@ -184,6 +185,17 @@ def test_sibling_links_groups_anchors_by_page() -> None:
     assert csl.sibling_links(htmls, SIB) == {f"{SIB}X/Y/": frozenset({"1", "2"}),
                                              SIB: frozenset()}
     assert csl.module_of(f"{SIB}Setoid/Algebras/Basic/", SIB) == "Setoid.Algebras.Basic"
+
+
+# --------------------------------------------------------------------------- #
+# The reference scanner: the text after a multi-line comment closes is prose.
+# --------------------------------------------------------------------------- #
+def test_a_reference_after_a_comment_closes_is_scanned() -> None:
+    refs = [r for _, r, _ in cl.iter_uses("keep [A][]\n<!--\nhidden [H][]\n--> see [Nope][]\n")]
+    assert refs == ["a", "nope"]
+    # ...and a comment reopened on the same line still hides what follows.
+    refs = [r for _, r, _ in cl.iter_uses("<!--\nx\n--> [B][] <!-- [C][]\n-->\n")]
+    assert refs == ["b"]
 
 
 # --------------------------------------------------------------------------- #
