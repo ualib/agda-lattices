@@ -1,0 +1,212 @@
+# =============================================================================
+# agda-lattices: MkDocs (Material) site configuration
+# -----------------------------------------------------------------------------
+# The documentation site, built from the `.lagda.md` sources by the pipeline
+# of the Agda Universal Algebra Library's site, in that site's theme (see
+# NOTICE for what is copied and what is adapted).
+# scripts/python/mkdocs_gen_library.py (mkdocs-gen-files and literate-nav)
+# mounts every module as a page and generates the navigation.  The published
+# build, `make site-full`, first runs `agda --html` twice: `make agda-md`
+# gives the highlighted, hyperlinked code blocks the pages embed, and `make
+# html` the standard library's pages, published at /classic/.  `make site`
+# skips both, so its code blocks are plain, for quick work on prose and the
+# theme.
+#
+#   Build : nix develop --command make site-full  ->  ./site  (what CI publishes)
+#   Fast  : nix develop --command make site       ->  ./site  (plain code blocks)
+#   Serve : nix develop --command make serve      (http://127.0.0.1:8000)
+# =============================================================================
+
+site_name: agda-lattices
+# The address the site is published at.  The deploy workflow passes the one
+# GitHub Pages reports (a custom domain once one is set), so adopting a
+# domain changes no file here; the default is the project page.  Every
+# internal link is relative, so the pages work at either address; site_url
+# sets the sitemap, the canonical links and the 404 page's links.
+site_url: !ENV [SITE_URL, "https://ualib.github.io/agda-lattices/"]
+site_description: >-
+  Lattice theory in Agda, on top of the Agda Universal Algebra Library: free
+  lattices and Whitman's solution of the word problem, canonical forms,
+  semidistributivity, bounded and projective lattices, Kostinsky's theorem,
+  Nation's theorem for finite lattices, and modular and distributive lattices.
+site_author: William DeMeo
+# HTML is allowed here, and the footer is where the sibling library is linked
+# from every page.  The same URL is in extra.agda_algebras below (the
+# navigation entry) and in docs/_links.md (the landing page's card).
+copyright: >-
+  Copyright &copy; 2018&ndash;2026 William DeMeo and the agda-algebras
+  development team.  Apache License 2.0.
+  &middot; Sibling library:
+  <a href="https://agda-algebras.universalalgebra.org/">agda-algebras</a>
+
+repo_url: https://github.com/ualib/agda-lattices
+repo_name: ualib/agda-lattices
+# Sources live in src/ (not docs/); gen-files sets each module page's edit
+# path to its `.lagda.md`.  The modules are exported from elsewhere and never
+# edited here, so the page action is "view the source", not "edit".
+edit_uri: blob/main/
+
+docs_dir: docs
+
+# Build hook: rewrite repo-relative prose links (src/..., root files) into
+# links MkDocs resolves, and cache-bust the site's own assets.
+hooks:
+  - scripts/python/mkdocs_hooks.py
+
+watch:
+  - src
+  - scripts/python/mkdocs_gen_library.py
+  - scripts/python/mkdocs_hooks.py
+
+# -- Theme --------------------------------------------------------------------
+# Constellation, the design of williamdemeo.org, as the Agda Universal Algebra
+# Library's site wears it.  These files are copied from that site unchanged,
+# and `make theme-check` compares them with it at THEME_REV (Makefile):
+#
+#   docs/assets/fonts/            the self-hosted faces, their OFL licenses,
+#                                 and fonts.css
+#   docs/stylesheets/tokens.css   colors, type, spacing: every value
+#   docs/stylesheets/theme.css    Material's variables and chrome, in tokens
+#   docs/stylesheets/agda.css     Agda's token classes, in tokens
+#   overrides/                    the 404 page and the repository chip
+#
+# docs/stylesheets/site.css is this site's own, on the same tokens.  A change
+# to a copied file is made in agda-algebras first and copied back.
+theme:
+  name: material
+  custom_dir: overrides
+  language: en
+  logo: assets/lattice.svg
+  favicon: assets/lattice.svg
+  icon:
+    repo: fontawesome/brands/github
+    view: material/file-eye-outline
+  features:
+    # Instant navigation swaps the page body over XHR instead of reloading,
+    # so the palette, the "Show all Agda" switch and the search index survive
+    # a click.  The site's scripts subscribe to Material's `document$`, which
+    # emits on every such navigation.  A link to a URL the sitemap does not
+    # list (/classic/, the sibling site) is an ordinary page load.
+    - navigation.instant
+    # Tabs, as on the sibling site: the landing page hides its sidebar, so
+    # on a desktop the tabs are its navigation.  Below 76.25em (1220 px)
+    # Material folds them into the drawer.
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top                # back-to-top button
+    - navigation.indexes            # a barrel module is its section's page
+    - navigation.tracking           # update the URL with the active anchor
+    - navigation.footer             # previous / next links
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.action.view
+    - content.tooltips
+  # No Google Fonts: `false` removes the preconnect and the stylesheet link
+  # Material emits otherwise; docs/assets/fonts/fonts.css declares the
+  # self-hosted faces.  `make offline-check` fails the build on a font link.
+  font: false
+  # Dark first, and no `media:` on either entry, as on the sibling site: the
+  # first palette is the default, and the reader's choice is remembered.
+  palette:
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+# Order matters: the faces before the tokens that name them, the tokens
+# before the rules that use them, and the site's own rules last.
+extra_css:
+  - assets/fonts/fonts.css
+  - stylesheets/tokens.css
+  - stylesheets/theme.css
+  - stylesheets/agda.css
+  - stylesheets/site.css
+
+extra_javascript:
+  # A copy button on highlighted `<pre class="Agda">` blocks, which
+  # Material's content.code.copy does not reach.
+  - assets/js/agda-copy.js
+  # The header's "Show all Agda" switch for the import scaffolding the
+  # sources hide (mkdocs_gen_library.reveal_hidden_agda).
+  - assets/js/agda-toggle.js
+
+# -- Plugins ------------------------------------------------------------------
+# Order matters: gen-files writes the pages and SUMMARY.md before
+# literate-nav reads it and before section-index promotes the barrels.
+plugins:
+  # The sibling site's separator: it splits a dotted module name on its dots
+  # (but not inside a number like `5.55`), so a search for `Kostinsky` finds
+  # `Lattices.Kostinsky.Finite`, and leaves a camel-cased name whole.
+  - search:
+      separator: '[\s​\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;'
+  - gen-files:
+      scripts:
+        - scripts/python/mkdocs_gen_library.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - section-index
+
+# -- Markdown extensions ------------------------------------------------------
+markdown_extensions:
+  - attr_list                       # `x`{.AgdaFunction} in the prose
+  - md_in_html
+  - def_list
+  - tables
+  - footnotes
+  - admonition
+  - toc:
+      permalink: true
+      permalink_title: Anchor link to this section
+  - pymdownx.highlight:
+      guess_lang: false             # ```agda blocks render as plain monospace
+      anchor_linenums: false
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.emoji:                 # Material icons, inlined as SVG
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.snippets:
+      base_path: [".", "docs"]
+      auto_append: ["_links.md"]    # the reference-link library, every page
+      check_paths: true
+
+# -- Files in docs/ that are not site pages -----------------------------------
+exclude_docs: |
+  _links.md
+
+# -- Link validation ----------------------------------------------------------
+# A link written `/Lattices/Free/Term.md` (docs/_links.md, the hook's
+# rewrites) is relative to the docs directory: MkDocs checks the page exists
+# and writes the link relative to the page it is on, so the site works under
+# any path.  Under --strict a link to a missing page fails the build.  The
+# links inside Agda's code blocks are raw HTML, which MkDocs does not read;
+# scripts/python/check_site_links.py checks those in the built site.
+validation:
+  links:
+    absolute_links: relative_to_docs
+    unrecognized_links: warn
+    anchors: warn
+  nav:
+    omitted_files: warn
+
+extra:
+  # The sibling library, linked from the navigation (mkdocs_gen_library.py
+  # reads this), the footer (`copyright` above) and the landing page
+  # (docs/_links.md).  Agda's links into its modules go to this site too.
+  agda_algebras: https://agda-algebras.universalalgebra.org/
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ualib/agda-lattices
+      name: agda-lattices on GitHub

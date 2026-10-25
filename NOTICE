@@ -9,3 +9,32 @@ of it in October 2026.  Its NOTICE reads, in the part that pertains to them:
 
 That code is licensed under the Apache License 2.0, the license of agda-algebras
 and of this repository (see LICENSE).
+
+The documentation site (mkdocs.yml, docs/, overrides/, scripts/js/ and the
+site tools under scripts/python/) is built by the pipeline of the Agda
+Universal Algebra Library's site, in that site's theme, as follows:
+
+  +  Copied unchanged from agda-algebras, at the commit the Makefile's
+     THEME_REV names (`make theme-check` compares them):
+       -  docs/stylesheets/tokens.css, theme.css and agda.css,
+          docs/assets/fonts/fonts.css, and docs/assets/js/agda-copy.js and
+          agda-toggle.js, which are part of agda-algebras' docs/ and licensed
+          there under the Creative Commons Attribution 4.0 International
+          License (https://creativecommons.org/licenses/by/4.0/);
+       -  overrides/404.html and overrides/partials/source.html, scripts/js/,
+          scripts/python/theme/check_offline.py with its test, and
+          scripts/python/test_check_links.py, under the Apache License 2.0;
+       -  scripts/python/_utils/__init__.py, file_ops.py and
+          pipeline_types.py, which agda-algebras vendors from
+          formalverification/agda-native-air
+          (https://github.com/formalverification/agda-native-air) under the
+          Apache License 2.0; each file's header records its provenance;
+       -  the font files under docs/assets/fonts/ (Inter, JuliaMono, Space
+          Grotesk), each under the SIL Open Font License 1.1, whose texts are
+          beside them (OFL-*.txt).
+  +  Adapted from agda-algebras, under the Apache License 2.0:
+     scripts/python/mkdocs_gen_library.py, mkdocs_hooks.py, gen_links.py and
+     check_links.py, and mkdocs.yml; each file says what was changed.
+  +  docs/stylesheets/site.css takes three of its sections from agda-algebras'
+     docs/stylesheets/site.css (CC BY 4.0, as above), unchanged; its header
+     says which.
