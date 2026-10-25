@@ -83,13 +83,30 @@ def test_navigation_order() -> None:
 # --------------------------------------------------------------------------- #
 # The hook's prose links.
 # --------------------------------------------------------------------------- #
+TRACKED = frozenset({"NOTICE", "CITATION.cff", "README.md", "src/Lattices/Dual.lagda.md"})
+DOCS = frozenset({"index.md", "Lattices/Free.md", "Lattices/Dual.md"})
+
+
 def test_retarget() -> None:
     assert hooks.retarget("src/Lattices/Free/Term.lagda.md#x") == "/Lattices/Free/Term.md#x"
     assert hooks.retarget("../../src/Lattices/Dual.lagda.md") == "/Lattices/Dual.md"
-    assert hooks.retarget("NOTICE") == f"{hooks.REPO_BLOB}NOTICE"
-    assert hooks.retarget("CITATION.cff") == f"{hooks.REPO_BLOB}CITATION.cff"
+    assert hooks.retarget("NOTICE", "", DOCS, TRACKED) == f"{hooks.REPO_BLOB}NOTICE"
+    assert hooks.retarget("CITATION.cff", "Lattices", DOCS, TRACKED) == f"{hooks.REPO_BLOB}CITATION.cff"
     for unchanged in ("#why", "https://x.org/a", "/Lattices/Dual.md", "mailto:a@b"):
-        assert hooks.retarget(unchanged) == unchanged
+        assert hooks.retarget(unchanged, "", DOCS, TRACKED) == unchanged
+
+
+def test_a_link_between_docs_pages_is_left_to_mkdocs() -> None:
+    # The landing page's "Browse the library" button, which went to a GitHub
+    # page that does not exist when every path with an extension was sent there.
+    assert hooks.retarget("Lattices/Free.md", "", DOCS, TRACKED) == "Lattices/Free.md"
+    assert hooks.retarget("Free.md#a", "Lattices", DOCS, TRACKED) == "Free.md#a"
+    assert hooks.retarget("../index.md", "Lattices", DOCS, TRACKED) == "../index.md"
+
+
+def test_an_untracked_path_is_left_for_mkdocs_to_report() -> None:
+    assert hooks.retarget("Lattices/Nope.md", "", DOCS, TRACKED) == "Lattices/Nope.md"
+    assert hooks.retarget("scripts/nope.py", "", DOCS, TRACKED) == "scripts/nope.py"
 
 
 # --------------------------------------------------------------------------- #

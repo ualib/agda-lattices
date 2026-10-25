@@ -10,6 +10,10 @@ site as they do on GitHub:
 
     ](src/Lattices/Free/Term.lagda.md#...)  ->  ](/Lattices/Free/Term.md#...)
     ](NOTICE)                               ->  ](https://github.com/.../NOTICE)
+    ](Lattices/Free.md)  (from docs/index.md)   unchanged: a docs page
+
+A link to a repository file goes to GitHub only when git tracks the file;
+anything else is left for MkDocs to check, and --strict fails on it.
 
 A target such as ``/Lattices/Free/Term.md`` is relative to the docs
 directory (mkdocs.yml: ``validation.links.absolute_links:
@@ -27,7 +31,9 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import posixpath
 import re
+import subprocess
 from pathlib import Path
 
 log = logging.getLogger("mkdocs.plugins.lattices.render")
@@ -39,30 +45,56 @@ FENCE = re.compile(r"^\s*```")
 
 _total = 0
 _done = 0
+_docs: frozenset[str] = frozenset()
+_tracked: frozenset[str] = frozenset()
 
 
-def retarget(target: str) -> str:
-    """The link MkDocs should see for a repo-relative ``target`` in prose."""
+def retarget(target: str, page_dir: str = "", docs: frozenset[str] = frozenset(),
+             tracked: frozenset[str] = frozenset()) -> str:
+    """The link MkDocs should see for ``target``, written in prose on a page
+    whose source sits in ``page_dir`` (relative to docs/).  ``docs`` holds
+    the docs-relative paths of the site's pages, ``tracked`` the repository's
+    tracked files (git ls-files)."""
     base, sep, frag = target.partition("#")
     anchor = (sep + frag) if sep else ""
 
     if base == "" or re.match(r"^(?:https?:|mailto:|/)", base):
         return target  # external, root-relative, or pure anchor
 
-    # Prose links are repo-relative and written from varying directory depths
-    # (./src/..., ../../src/...); strip the leading dot-segments so we can
-    # match on the repo path regardless of where the source module sits.
+    # A link from one docs page to another is MkDocs' own: it resolves it
+    # against the page, checks it, and writes it.
+    if posixpath.normpath(posixpath.join(page_dir, base)) in docs:
+        return target
+
+    # Prose links in the modules are repo-relative and written from varying
+    # directory depths (./src/..., ../../src/...); strip the leading
+    # dot-segments so we can match on the repo path regardless of where the
+    # source module sits.
     base = re.sub(r"^(?:\.{1,2}/)+", "", base)
 
     m = re.match(r"^src/(.+)\.lagda\.md$", base)
     if m:
         return f"/{m.group(1)}.md{anchor}"
-    # Any other repo-relative path to a file (README.md, LICENSE, NOTICE,
-    # CITATION.cff, a script, a workflow): view it on GitHub rather than
-    # 404 on the site.
-    if re.search(r"(?:^|/)[^/]*\.[A-Za-z0-9]+$", base) or base in ("LICENSE", "NOTICE"):
+    # Any other file the repository tracks (README.md, LICENSE, NOTICE,
+    # CITATION.cff, a script, a workflow): view it on GitHub rather than 404
+    # on the site.  Anything else is left as written, so that MkDocs reports
+    # it under --strict rather than the site sending a reader to a GitHub
+    # page that does not exist.
+    if base in tracked:
         return f"{REPO_BLOB}{base}{anchor}"
     return target
+
+
+def tracked_files() -> frozenset[str]:
+    """The repository's tracked files, or none when git cannot say (then
+    every link to a repository file is left for MkDocs to report)."""
+    try:
+        out = subprocess.run(["git", "ls-files", "-z"], capture_output=True,
+                             check=True).stdout.decode("utf-8")
+    except (OSError, subprocess.CalledProcessError):
+        log.warning("git ls-files failed: links to repository files cannot be resolved")
+        return frozenset()
+    return frozenset(p for p in out.split("\0") if p)
 
 
 def _cache_bust(entry, docs_dir: Path):
@@ -105,9 +137,12 @@ def on_files(files, config):
     summary = files.get_file_from_path("SUMMARY.md")
     if summary is not None:
         summary.inclusion = InclusionLevel.EXCLUDED
-    global _total, _done
+    global _total, _done, _docs, _tracked
     _total = sum(1 for f in files if getattr(f, "is_documentation_page", lambda: False)())
     _done = 0
+    _docs = frozenset(f.src_uri for f in files
+                      if getattr(f, "is_documentation_page", lambda: False)())
+    _tracked = tracked_files()
     return files
 
 
@@ -115,6 +150,8 @@ def on_page_markdown(markdown: str, *, page=None, config=None, files=None) -> st
     global _done
     _done += 1
 
+    src_uri = getattr(getattr(page, "file", None), "src_uri", None) or ""
+    page_dir = posixpath.dirname(src_uri)
     out: list[str] = []
     in_code = False
     rewrites = 0
@@ -122,7 +159,8 @@ def on_page_markdown(markdown: str, *, page=None, config=None, files=None) -> st
         if FENCE.match(line):
             in_code = not in_code
         elif not in_code:
-            new = LINK.sub(lambda m: m.group(1) + retarget(m.group(2)) + m.group(3), line)
+            new = LINK.sub(lambda m: m.group(1) + retarget(m.group(2), page_dir, _docs, _tracked)
+                           + m.group(3), line)
             if new != line:
                 rewrites += 1
             line = new
