@@ -45,9 +45,11 @@ on:
     - cron: "17 6 * * 1"            # Mondays: the sibling site may have moved
   workflow_dispatch:
 
+# A newer push to a pull request cancels the older run; on main, runs queue,
+# so a deploy in progress is never cancelled and deploys land in order.
 concurrency:
   group: site-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -57,6 +59,10 @@ jobs:
     name: Build and check the site
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    # The address the site was built for, which the `outside` job's checks
+    # must read the built pages against (the 404 page's links carry its path).
+    outputs:
+      site_url: ${{ steps.pages.outputs.base_url && format('{0}/', steps.pages.outputs.base_url) || '' }}
 
     steps:
       - name: Checkout
@@ -146,7 +152,12 @@ jobs:
       # Both checks are standard-library Python, so the runner's python3 runs
       # them without the dev shell.
       - name: The links into the sibling site
-        run: make sibling-links
+        env:
+          SITE_URL: ${{ needs.build.outputs.site_url }}
+        run: |
+          set -euxo pipefail
+          if [ -z "$SITE_URL" ]; then unset SITE_URL; fi
+          make sibling-links
 
       - name: The theme against agda-algebras
         run: make theme-check
