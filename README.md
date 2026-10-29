@@ -173,6 +173,27 @@ A module whose own check takes three seconds or more says so in its front
 matter (`check-cost: heavy`) and states its cost in its prose; no barrel
 imports it, and `make check` still checks it.
 
+## Releases
+
+The library is released by version, from `v0.1.0`.  Each release is a tag
+`vX.Y.Z` on `main` with a GitHub release, and `CHANGELOG.md` records what each
+one added, changed and removed.  Versions follow [Semantic Versioning][semver];
+before `v1.0.0`, a new minor version adds modules or statements, or changes
+the type of a statement, and a new patch version changes only prose, or proofs
+that keep every type.
+
+The modules under `src/` are exported to this repository from the library's
+source repository, byte for byte; each release's section in `CHANGELOG.md`
+names the source commit.  So `src/` changes only by an export, in a pull
+request of its own, and a correction to a module (welcome here as an issue) is
+made at the source and arrives with the next release.  The rest of this
+repository (this README, `CHANGELOG.md`, the documentation site, the checks
+and CI) changes by ordinary pull requests.
+
+To build on a release, pin its tag, as in a Nix flake input
+`github:ualib/agda-lattices/v0.1.0`; to cite one, use `CITATION.cff` and name
+the version.
+
 ## Provenance
 
 The library's first modules, on lattice terms, Whitman's solution of the word
@@ -187,7 +208,8 @@ between May and August 2026.  The others were written since.
 
 The library is licensed under the Apache License 2.0 (`LICENSE`); `NOTICE`
 records the attribution it carries from the Agda Universal Algebra Library.
-`CITATION.cff` gives the metadata for citing it.
+`CITATION.cff` gives the metadata for citing it, and a citation names the
+version it used (see Releases).
 
 ## Acknowledgment
 
@@ -205,4 +227,5 @@ statement and proof.
 [agda-stdlib]: https://github.com/agda/agda-stdlib
 [Cachix]: https://www.cachix.org/
 [Nix]: https://nixos.org/
+[semver]: https://semver.org/spec/v2.0.0.html
 [site]: https://ualib.github.io/agda-lattices/
