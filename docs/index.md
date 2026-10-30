@@ -45,10 +45,11 @@ by their operation tables, and worked examples.
 The reference throughout is R. Freese, J. Ježek and J. B. Nation, *Free
 Lattices*, Mathematical Surveys and Monographs 42, American Mathematical
 Society, 1995 ([Freese, Ježek, and Nation (1995)][]; FJN below), cited by
-theorem number.  Each result of FJN that the library proves in full is also
-one Agda definition whose type is its statement, named by its number in the
-book (`FJN-1·19` for Theorem 1.19) or, for Theorem 1.11, `WhitmansTheorem`;
-[Free.FJN][Lattices.Free.FJN] lists them in the book's order.  The library is
+theorem number.  Each result of Chapter I that the library proves in full,
+and Lemma 9.13, is also one Agda definition whose type is its statement,
+named by its number in the book (`FJN-1·19` for Theorem 1.19) or, for
+Theorem 1.11, `WhitmansTheorem`; [Free.FJN][Lattices.Free.FJN] lists them in
+the book's order.  The library is
 built on the algebras, terms, homomorphisms and congruences of the [Agda
 Universal Algebra Library][].
 
@@ -154,9 +155,9 @@ navigation lists the same modules as a tree.
    generated sublattice of a free lattice, decided through the lower bound
    `β` of the homomorphism, which Free.Bounded computes).
    [Free.FJN][Lattices.Free.FJN], which the barrel does not import, gathers
-   the statements of FJN's results that the library proves in full (Chapter
-   I and Lemma 9.13), one definition each, in the book's order, with a table
-   naming the module that proves each.
+   the statements of the results of FJN's Chapter I that the library proves
+   in full, and of Lemma 9.13, one definition each, in the book's order, with
+   a table naming the module that proves each.
 +  **Any lattice**.  [Semidistributive][Lattices.Semidistributive] and
    [Semidistributive.FiniteJoins][Lattices.Semidistributive.FiniteJoins] (the
    semidistributive laws and Whitman's condition, FJN Theorem 1.21),

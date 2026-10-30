@@ -18,9 +18,10 @@ abstract: >-
   condition is bounded; quotients, intervals, sublattices, direct limits,
   modular and distributive lattices, central elements and direct
   decompositions, finite products, and lattices given by their operation
-  tables.  Each result of Freese, Ježek and Nation's Free Lattices that the
-  library proves in full is also one statement, named by its number in the
-  book.  Every module is checked under --without-K --exact-split --safe.
+  tables.  Each result of Chapter I of Freese, Ježek and Nation's Free
+  Lattices that the library proves in full, and Lemma 9.13, is also one
+  statement, named by its number in the book or its standard theorem name.
+  Every module is checked under --without-K --exact-split --safe.
 authors:
   - family-names: "DeMeo"
     given-names: "William"
