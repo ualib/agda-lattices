@@ -239,7 +239,10 @@ between May and August 2026.  The others were written since.
 The library is licensed under the Apache License 2.0 (`LICENSE`); `NOTICE`
 records the attribution it carries from the Agda Universal Algebra Library.
 `CITATION.cff` gives the metadata for citing it, and a citation names the
-version it used (see Releases).
+version it used (see Releases).  Zenodo archives every release: the DOI
+[10.5281/zenodo.23815018][doi] names the library as a whole and resolves to
+its latest version, and each version has a DOI of its own, which its Zenodo
+record gives.
 
 ## Acknowledgment
 
@@ -256,6 +259,7 @@ statement and proof.
 [agda-pin]: https://github.com/agda/agda/tree/da66a8c75f11d10699a6b38b261efdf244b66f2a
 [agda-stdlib]: https://github.com/agda/agda-stdlib
 [Cachix]: https://www.cachix.org/
+[doi]: https://doi.org/10.5281/zenodo.23815018
 [Nix]: https://nixos.org/
 [semver]: https://semver.org/spec/v2.0.0.html
 [site]: https://ualib.github.io/agda-lattices/
