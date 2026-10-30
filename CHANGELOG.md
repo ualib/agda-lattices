@@ -10,7 +10,7 @@ repository whose modules `src/` holds, byte for byte.
 ## v0.2.0 (2026-10-30)
 
 Since v0.1.0.  `src/` holds, byte for byte, the library's 91 modules at commit
-`38fa97152304b0fc12091e912374cb416a5a3b81` of its source repository.
+`4866e0a5790715466d3630a24c24600b8cdf752f` of its source repository.
 
 This release adds direct limits of sequences of lattices, with their universal
 property, and the union of an ascending chain of sublattices as a direct
