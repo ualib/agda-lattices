@@ -40,20 +40,26 @@ to itself, which evaluates every term to itself.
 
 module Lattices.Free.Universal where
 
-open import Agda.Primitive  using () renaming ( Set to Type )
+open import Agda.Primitive  using ( Setω ) renaming ( Set to Type )
 
 -- Imports from the Agda Standard Library ---------------------------------------
 open import Data.Fin.Patterns                      using ( 0F ; 1F )
-open import Data.Product                           using ( _,_ ; proj₁ ; proj₂ )
-open import Function                               using ( Func ; _⇔_ ; mk⇔ )
+open import Data.Product                           using ( _×_ ; _,_ ; proj₁ ; proj₂ )
+open import Data.Sum.Base                          using ( _⊎_ )
+open import Function                               using ( Func ; _⇔_ ; mk⇔ ; _∘_ )
 open import Level                                  using ( Level ; _⊔_ )
 open import Relation.Binary                        using ( Setoid )
+open import Relation.Binary.Definitions            using ( DecidableEquality )
+open import Relation.Nullary.Decidable.Core        using ( Dec )
 open import Relation.Binary.Lattice                using ( Supremum ; Infimum )
                                                    renaming ( Lattice to OrderLattice
                                                             ; IsLattice to IsOrderLattice )
 open import Relation.Binary.PropositionalEquality  using ( _≡_ ; refl ; cong₂ ; subst₂ )
 
 import Algebra.Lattice.Bundles                     as AlgLatticeBundles
+import Data.Product                                as Product
+import Data.Sum.Base                               as Sum
+import Relation.Nullary.Decidable.Core             as Dec
 import Algebra.Lattice.Properties.Lattice          as AlgLatticeProperties
 import Relation.Binary.Lattice.Properties.Lattice  as OrderLatticeProperties
 
@@ -68,7 +74,8 @@ open import Lattices.Free.Term  using ( LatTerm ; ℊ ; _∧̇_ ; _∨̇_
 open import Lattices.Free.Whitman
   using  ( _≤ʷ_ ; _≈ʷ_ ; ≈ʷ-isEquivalence ; ∨≤ ; ℊ≤∧ ; ∧≤∧ ; ℊ≤ℊ ; ℊ≤∨ˡ ; ℊ≤∨ʳ
          ; ∧ˡ≤ℊ ; ∧ʳ≤ℊ ; ∧ˡ≤∨ ; ∧ʳ≤∨ ; ∧≤∨ˡ ; ∧≤∨ʳ ; ℊ≤ℊ-inv ; ≤∧ ; ≤ʷ-refl ; ≤ʷ-trans
-         ; ∨̇-upperˡ ; ∨̇-upperʳ ; ∧̇-lowerˡ ; ∧̇-lowerʳ )
+         ; ∨̇-upperˡ ; ∨̇-upperʳ ; ∧̇-lowerˡ ; ∧̇-lowerʳ ; ∨≤-inv ; ℊ≤∨-inv ; ∧≤ℊ-inv
+         ; ∧≤∨-inv ; ≤∧-inv ; module Decision )
 open import Setoid.Algebras.Basic                   using ( 𝔻[_] ; 𝕌[_] )
 open import Setoid.Homomorphisms.Basic              using ( hom ; mkhom ; compatible-map
                                                           ; IsHom )
@@ -345,4 +352,74 @@ argument positions (`args`); a join is the same with `∨-Op`.
     args : ∀ i → proj₁ h ⟨$⟩ pair s t i ≈ pair (⟦ s ⟧ f) (⟦ t ⟧ f) i
     args 0F = FL-extend-unique h hℊ s
     args 1F = FL-extend-unique h hℊ t
+```
+
+#### Whitman's theorem as one statement
+
+[Freese, Ježek, and Nation (1995)][], Theorem 1.11, is Whitman's solution of
+the word problem: for terms `s` and `t`, whether `s ≤ t` holds in `FL(X)` is
+determined by six rules, each an equivalence that reduces the question to
+proper subterms, except rule 1, which answers it.  `WhitmansTheorem`{.AgdaFunction}
+states it as one type, a record in `Setω` (it quantifies over the level of
+`X`) whose fields are its parts, and `whitmans-theorem`{.AgdaFunction} proves
+it from the names above and the inversion lemmas of
+[Lattices.Free.Whitman][].  The order is the meet order of
+`FL X`{.AgdaFunction}, the book's `s^{FL(X)} ≤ t^{FL(X)}`; the parts are as
+follows:
+
++  **Parts 1 to 6** are the book's rules (1) to (6), for binary joins and
+   meets where the book's are n-ary: (1) two generators, `x ≤ y` exactly when
+   `x = y`; (2) a join on the left, `s₁ ∨ s₂ ≤ t` exactly when both joinands
+   are; (3) a meet on the right; (4) a generator below a join, exactly when it
+   lies below a joinand; (5) a meet below a generator, exactly when a meetand
+   does; (6) a meet below a join, exactly when a meetand lies below the join
+   or the meet below a joinand, which is Whitman's condition.
++  **Part 7** is "can be determined": with decidable equality on the
+   generators, which rule (1) needs, the order of `FL(X)` is decided.
++  **Part 8** says that the order is the one the book means: `s ≤ t` holds in
+   `FL(X)` exactly when it holds in every lattice under every assignment
+   (the book's construction of `FL(X)` as terms modulo the equations true in
+   all lattices, p. 10).  The lattices are those at the level of `X`; the
+   rules are sound at every level (`≤ʷ-sound`{.AgdaFunction}).
+
+```agda
+-- FJN Theorem 1.11 (Whitman): the six rules decide the order of FL(X).
+record WhitmansTheorem : Setω where
+  field
+    part-1 : ∀ {χ} {X : Type χ} → let open Lattice-Order (FL X) using ( _≤_ ) in
+             ∀ {x y : X} → ℊ x ≤ ℊ y ⇔ x ≡ y
+    part-2 : ∀ {χ} {X : Type χ} → let open Lattice-Order (FL X) using ( _≤_ ) in
+             ∀ {s₁ s₂ t : LatTerm X} → s₁ ∨̇ s₂ ≤ t ⇔ (s₁ ≤ t × s₂ ≤ t)
+    part-3 : ∀ {χ} {X : Type χ} → let open Lattice-Order (FL X) using ( _≤_ ) in
+             ∀ {s t₁ t₂ : LatTerm X} → s ≤ t₁ ∧̇ t₂ ⇔ (s ≤ t₁ × s ≤ t₂)
+    part-4 : ∀ {χ} {X : Type χ} → let open Lattice-Order (FL X) using ( _≤_ ) in
+             ∀ {x : X} {t₁ t₂ : LatTerm X} → ℊ x ≤ t₁ ∨̇ t₂ ⇔ (ℊ x ≤ t₁ ⊎ ℊ x ≤ t₂)
+    part-5 : ∀ {χ} {X : Type χ} → let open Lattice-Order (FL X) using ( _≤_ ) in
+             ∀ {s₁ s₂ : LatTerm X} {y : X} → s₁ ∧̇ s₂ ≤ ℊ y ⇔ (s₁ ≤ ℊ y ⊎ s₂ ≤ ℊ y)
+    part-6 : ∀ {χ} {X : Type χ} → let open Lattice-Order (FL X) using ( _≤_ ) in
+             ∀ {s₁ s₂ t₁ t₂ : LatTerm X}
+             →  s₁ ∧̇ s₂ ≤ t₁ ∨̇ t₂
+                ⇔ ((s₁ ≤ t₁ ∨̇ t₂ ⊎ s₂ ≤ t₁ ∨̇ t₂) ⊎ (s₁ ∧̇ s₂ ≤ t₁ ⊎ s₁ ∧̇ s₂ ≤ t₂))
+    part-7 : ∀ {χ} {X : Type χ} → let open Lattice-Order (FL X) using ( _≤_ ) in
+             DecidableEquality X → (s t : LatTerm X) → Dec (s ≤ t)
+    part-8 : ∀ {χ} {X : Type χ} → let open Lattice-Order (FL X) using ( _≤_ ) in
+             ∀ {s t : LatTerm X} → s ≤ t ⇔ ((𝑳 : Lattice χ χ) → 𝑳 ⊧ s ≤ t)
+
+whitmans-theorem : WhitmansTheorem
+whitmans-theorem = record
+  { part-1 = mk⇔ (ℊ≤ℊ-inv ∘ ≤→≤ʷ) (≤ʷ→≤ ∘ ℊ≤ℊ)
+  ; part-2 = mk⇔ (Product.map ≤ʷ→≤ ≤ʷ→≤ ∘ ∨≤-inv ∘ ≤→≤ʷ)
+                 (λ (p , q) → ≤ʷ→≤ (∨≤ (≤→≤ʷ p) (≤→≤ʷ q)))
+  ; part-3 = mk⇔ (Product.map ≤ʷ→≤ ≤ʷ→≤ ∘ ≤∧-inv ∘ ≤→≤ʷ)
+                 (λ (p , q) → ≤ʷ→≤ (≤∧ (≤→≤ʷ p) (≤→≤ʷ q)))
+  ; part-4 = mk⇔ (Sum.map ≤ʷ→≤ ≤ʷ→≤ ∘ ℊ≤∨-inv ∘ ≤→≤ʷ)
+                 (Sum.[ ≤ʷ→≤ ∘ ℊ≤∨ˡ ∘ ≤→≤ʷ , ≤ʷ→≤ ∘ ℊ≤∨ʳ ∘ ≤→≤ʷ ])
+  ; part-5 = mk⇔ (Sum.map ≤ʷ→≤ ≤ʷ→≤ ∘ ∧≤ℊ-inv ∘ ≤→≤ʷ)
+                 (Sum.[ ≤ʷ→≤ ∘ ∧ˡ≤ℊ ∘ ≤→≤ʷ , ≤ʷ→≤ ∘ ∧ʳ≤ℊ ∘ ≤→≤ʷ ])
+  ; part-6 = mk⇔ (Sum.map (Sum.map ≤ʷ→≤ ≤ʷ→≤) (Sum.map ≤ʷ→≤ ≤ʷ→≤) ∘ ∧≤∨-inv ∘ ≤→≤ʷ)
+                 (Sum.[ Sum.[ ≤ʷ→≤ ∘ ∧ˡ≤∨ ∘ ≤→≤ʷ , ≤ʷ→≤ ∘ ∧ʳ≤∨ ∘ ≤→≤ʷ ]
+                      , Sum.[ ≤ʷ→≤ ∘ ∧≤∨ˡ ∘ ≤→≤ʷ , ≤ʷ→≤ ∘ ∧≤∨ʳ ∘ ≤→≤ʷ ] ])
+  ; part-7 = λ _≟_ s t → Dec.map′ ≤ʷ→≤ ≤→≤ʷ (Decision._≤ʷ?_ _≟_ s t)
+  ; part-8 = mk⇔ ((λ p 𝑳 → ≤ʷ-sound 𝑳 p) ∘ ≤→≤ʷ) (≤ʷ→≤ ∘ ≤ʷ-complete)
+  }
 ```

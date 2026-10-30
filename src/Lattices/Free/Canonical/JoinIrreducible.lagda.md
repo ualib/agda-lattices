@@ -46,7 +46,7 @@ direction for a join reducible `w` needs no hypothesis at all
 
 module Lattices.Free.Canonical.JoinIrreducible where
 
-open import Agda.Primitive  using () renaming ( Set to Type )
+open import Agda.Primitive  using ( Setω ) renaming ( Set to Type )
 
 -- Imports from the Agda Standard Library ---------------------------------------
 open import Data.Empty                             using ( ⊥-elim )
@@ -506,4 +506,32 @@ infinite `X` it is `u ∧ x` for a generator `x` not occurring in `u`.
                            → Any (u ≈ʷ_) (canonicalJoinands _≟_ w) ⇔ (Σ[ a ∈ LatTerm X ] JoinandWitness w u a)
   canonicalJoinand⇔witness ji v<u =
     mk⇔ (joinand⇒witness v<u) (λ (_ , wit) → witness⇒joinand ji v<u wit)
+```
+
+#### The statement of Theorem 1.20
+
+Theorem 1.20 is one definition whose type is the statement,
+`FJN-1·20`{.AgdaFunction}, a type in `Setω` since it quantifies over the level
+of the generators; [Lattices.Free.FJN][] lists it with the rest of Chapter I.
+The book: for `w ∈ FL(X)` and `u` join irreducible, `u` is a canonical joinand
+of `w` if and only if there is an `a` with `w = u ∨ a` and `w > v ∨ a` for every
+`v < u` (`JoinandWitness`{.AgdaFunction}).  The statement adds the hypothesis
+that some `v` lies strictly below `u`, so it is weaker than the book's, and
+necessarily: without it the theorem fails at the least element of `FL(X)` for
+finite `X`, as the opening section explains and
+[Lattices.Examples.FreeLattice3][] certifies.  The hypothesis holds for every
+join irreducible `u` but that least element.  "Is a canonical joinand" is read
+up to the equality of `FL(X)`, and decidable equality on the generators is
+assumed, which the canonical form uses.
+
+```agda
+-- FJN Theorem 1.20, for a u with something strictly below it: u is a canonical
+-- joinand of w exactly when some a witnesses it.
+FJN-1·20 : Setω
+FJN-1·20 =  ∀ {χ} {X : Type χ} (_≟_ : DecidableEquality X) {u v w : LatTerm X}
+            → IsJoinIrreducible u → v <ʷ u
+            → Any (u ≈ʷ_) (canonicalJoinands _≟_ w) ⇔ (Σ[ a ∈ LatTerm X ] JoinandWitness w u a)
+
+fjn-1·20 : FJN-1·20
+fjn-1·20 = canonicalJoinand⇔witness
 ```

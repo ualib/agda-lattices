@@ -38,7 +38,7 @@ The two results have proofs of very different depth, and so different hypotheses
 
 module Lattices.Free.Semidistributive where
 
-open import Agda.Primitive  using () renaming ( Set to Type )
+open import Agda.Primitive  using ( Setω ) renaming ( Set to Type )
 
 -- Imports from the Agda Standard Library ---------------------------------------
 open import Data.List.Base                         using ( List ; [] ; _∷_ ; map ; _++_
@@ -50,11 +50,19 @@ open import Data.List.Membership.Propositional.Properties
 open import Data.List.Relation.Unary.Any           using ( Any ; here ; there )
 open import Data.Product                           using ( _,_ ; proj₂ )
 open import Data.Sum.Base                          using () renaming ( map to ⊎-map )
+open import Function                               using ( _⇔_ )
 open import Level                                  using ( Level )
 open import Relation.Binary.Definitions            using ( DecidableEquality )
 open import Relation.Binary.PropositionalEquality  using ( refl ; sym ; subst )
 
 -- Imports from the Agda Universal Algebra Library ------------------------------
+open import Classical.Structures.Lattice.Basic  using ( Lattice )
+
+-- Imports from this library ----------------------------------------------------
+open import Lattices.Dual  using ( dualLattice )
+open import Lattices.Semidistributive.FiniteJoins
+  using  ( IsFiniteJoinSemidistributive ; joinSemidistributive⇔finite
+         ; joinSemidistributive→finite )
 open import Lattices.Semidistributive
   using  ( IsJoinSemidistributive ; IsMeetSemidistributive ; IsSemidistributive
          ; SatisfiesW )
@@ -213,4 +221,54 @@ removes the duals.
 
   FL-isSemidistributive : IsSemidistributive (FL X)
   FL-isSemidistributive = FL-isJoinSemidistributive , FL-isMeetSemidistributive
+```
+
+#### The statements of Theorems 1.8 and 1.21
+
+Each of the two theorems is one definition whose type is the statement, with
+its proof beside it; [Lattices.Free.FJN][] lists them with the rest of
+Chapter I.  A statement quantifies over levels, so it is a type in `Setω`, and
+a statement in several parts is a record with one field per part, in the
+book's order.
+
+`FJN-1·8`{.AgdaFunction} is Theorem 1.8: `FL(X)` satisfies Whitman's condition
+(W).  The library's (W) (`SatisfiesW`{.AgdaFunction} of
+[Lattices.Semidistributive][]) speaks of a binary meet below a binary join;
+the book's speaks of `v₁ ∧ ⋯ ∧ vᵣ ≤ u₁ ∨ ⋯ ∨ uₛ`, and the two are equivalent
+in every lattice, by grouping the meetands and joinands in two.
+
+`FJN-1·21`{.AgdaFunction} is Theorem 1.21 (Jónsson and Kiefer), in three
+parts: (1) free lattices are semidistributive; (2) in every lattice, (SD∨) is
+equivalent to the book's condition (3), `w = ⋁ᵢ aᵢ = ⋁ⱼ bⱼ` implies
+`w = ⋁ᵢⱼ (aᵢ ∧ bⱼ)` for finite nonempty families
+(`IsFiniteJoinSemidistributive`{.AgdaFunction} of
+[Lattices.Semidistributive.FiniteJoins][]); (3) in every meet semidistributive
+lattice the dual statement holds, which is (3) in the dual lattice.  Part (1)
+assumes decidable equality on the generators, which the canonical form behind
+its proof needs.
+
+```agda
+-- FJN Theorem 1.8: free lattices satisfy Whitman's condition.
+FJN-1·8 : Setω
+FJN-1·8 = ∀ {χ} {X : Type χ} → SatisfiesW (FL X)
+
+fjn-1·8 : FJN-1·8
+fjn-1·8 = FL-satisfiesW
+
+-- FJN Theorem 1.21: free lattices are semidistributive, and (SD∨) is
+-- equivalent to its form for finite joins, and dually.
+record FJN-1·21 : Setω where
+  field
+    part-1 : ∀ {χ} {X : Type χ} → DecidableEquality X → IsSemidistributive (FL X)
+    part-2 : ∀ {α ρ} (𝑳 : Lattice α ρ)
+             → IsJoinSemidistributive 𝑳 ⇔ IsFiniteJoinSemidistributive 𝑳
+    part-3 : ∀ {α ρ} (𝑳 : Lattice α ρ)
+             → IsMeetSemidistributive 𝑳 → IsFiniteJoinSemidistributive (dualLattice 𝑳)
+
+fjn-1·21 : FJN-1·21
+fjn-1·21 = record
+  { part-1 = FL-isSemidistributive
+  ; part-2 = joinSemidistributive⇔finite
+  ; part-3 = λ 𝑳 → joinSemidistributive→finite (dualLattice 𝑳)
+  }
 ```

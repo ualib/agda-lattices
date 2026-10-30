@@ -34,6 +34,10 @@ homomorphism between free lattices is one), with membership among canonical
 joinands read up to equality in the free lattice, since canonical forms are
 unique only up to commutativity.  It then proves the dual for canonical
 meetands, and describes the canonical joinands and meetands of an image.
+Last, with the antichain of canonical joinands it has at hand, it proves the
+second sentence of Theorem 1.19, that the canonical joinands are the unique
+minimal join representation, and states Theorem 1.19 and Lemma 9.13 as one
+definition each.
 
 <!--
 ```agda
@@ -41,7 +45,7 @@ meetands, and describes the canonical joinands and meetands of an image.
 
 module Lattices.Free.Embedding where
 
-open import Agda.Primitive  using () renaming ( Set to Type )
+open import Agda.Primitive  using ( Setω ) renaming ( Set to Type )
 
 -- Imports from the Agda Standard Library ---------------------------------------
 open import Data.Empty                             using ( ⊥ ; ⊥-elim )
@@ -470,4 +474,125 @@ or lies above a generator `σ i` whose generator is a canonical meetand of `t`.
         u≤u' = antichain-≤ ≤ʷ-refl (canonicalMeetands-antichain _≟ʸ_ (t [ σ ])) u'∈ u∈
                            (≤ʷ-trans (proj₂ a≈u') a'≤u)
     in inj₁ (_ , a∈ , not-gen , ≤ʷ-trans u≤u' (proj₂ a≈u') , a'≤u)
+```
+
+#### Theorem 1.19 whole: the unique minimal join representation
+
+The book defines a join representation `a = a₁ ∨ ⋯ ∨ aₙ` in any lattice to be
+*minimal* if `a = b₁ ∨ ⋯ ∨ bₘ` and `{b₁, …, bₘ} ≪ {a₁, …, aₙ}` imply
+`{a₁, …, aₙ} ⊆ {b₁, …, bₘ}` (p. 17), where `B ≪ A`, *`B` join refines `A`*,
+says that each member of `B` lies below a member of `A`.  For lattice terms
+naming elements of `FL(X)`, a nonempty list `u ∷ us` is a minimal join
+representation of `w` (`IsMinimalJoinRepresentation`{.AgdaFunction}) when `w`
+is its join and every join representation of `w` that refines it contains each
+of its members, up to the equality of `FL(X)`.
+
+The second sentence of Theorem 1.19 says that the canonical joinands are the
+unique minimal join representation.  They are one
+(`canonicalJoinands-minimal`{.AgdaFunction}): if `w = ⋁B` and `B` refines
+them, then by the first sentence each canonical joinand `a` lies below some
+`b ∈ B`, which lies below a canonical joinand `a′`; the canonical joinands
+form an antichain, so `a′ = a` and `b = a`.  And every minimal join
+representation `B` of `w` has the same members
+(`minimalJoinRepresentation-unique`{.AgdaFunction}): the canonical joinands
+refine `B` by the first sentence, so the minimality of `B` puts each member
+of `B` among them; then `B` refines them, and their own minimality puts each
+of them in `B`.
+
+```agda
+module _ {X : Type χ} where
+  -- u ∷ us is a minimal join representation of w.
+  IsMinimalJoinRepresentation : LatTerm X → LatTerm X → List (LatTerm X) → Type χ
+  IsMinimalJoinRepresentation w u us =
+    w ≈ʷ ⋁⁺ u us
+    × (∀ v vs → w ≈ʷ ⋁⁺ v vs → (∀ {b} → b ∈ v ∷ vs → Any (b ≤ʷ_) (u ∷ us))
+              → ∀ {a} → a ∈ u ∷ us → Any (a ≈ʷ_) (v ∷ vs))
+
+module _ {X : Type χ} (_≟_ : DecidableEquality X) where
+  -- The canonical joinands are a minimal join representation.
+  canonicalJoinands-minimal : (w : LatTerm X)
+    → IsMinimalJoinRepresentation w (joinand₀ _≟_ w) (joinands₊ _≟_ w)
+  canonicalJoinands-minimal w = joinand-representation _≟_ w , minimal
+    where
+    minimal : ∀ v vs → w ≈ʷ ⋁⁺ v vs
+            → (∀ {b} → b ∈ v ∷ vs → Any (b ≤ʷ_) (canonicalJoinands _≟_ w))
+            → ∀ {a} → a ∈ canonicalJoinands _≟_ w → Any (a ≈ʷ_) (v ∷ vs)
+    minimal v vs e refines a∈ =
+      let (b , b∈ , a≤b)    = find (canonicalJoinands-refine _≟_ e a∈)
+          (a′ , a′∈ , b≤a′)  = find (refines b∈)
+          a′≤a               = antichain-≤ ≤ʷ-refl (canonicalJoinands-antichain _≟_ w)
+                                           a∈ a′∈ (≤ʷ-trans a≤b b≤a′)
+      in  lose b∈ (a≤b , ≤ʷ-trans b≤a′ a′≤a)
+
+  -- Every minimal join representation has the members of the canonical joinands.
+  minimalJoinRepresentation-unique : (w v : LatTerm X) (vs : List (LatTerm X))
+    → IsMinimalJoinRepresentation w v vs
+    →  (∀ {a} → a ∈ canonicalJoinands _≟_ w → Any (a ≈ʷ_) (v ∷ vs)) ×
+       (∀ {b} → b ∈ v ∷ vs → Any (b ≈ʷ_) (canonicalJoinands _≟_ w))
+  minimalJoinRepresentation-unique w v vs (e , minimal) =
+    canonicalJoinands-minimal w .proj₂ v vs e (λ b∈ → Any.map proj₁ (B⊆A b∈)) , B⊆A
+    where
+    B⊆A : ∀ {b} → b ∈ v ∷ vs → Any (b ≈ʷ_) (canonicalJoinands _≟_ w)
+    B⊆A = minimal (joinand₀ _≟_ w) (joinands₊ _≟_ w) (joinand-representation _≟_ w)
+                  (canonicalJoinands-refine _≟_ e)
+```
+
+#### The statements of Theorem 1.19 and Lemma 9.13
+
+Each of the two results is one definition whose type is the statement, with
+its proof beside it, a type in `Setω` since it quantifies over the levels of
+the generators; [Lattices.Free.FJN][] lists them with the rest of the book's
+results.  Both assume decidable equality on the generators, which the
+computation of canonical forms uses.
+
+`FJN-1·19`{.AgdaFunction} is Theorem 1.19, in two parts: (1) if
+`w = u₁ ∨ ⋯ ∨ uₘ`, then each canonical joinand of `w` lies below some `uⱼ`;
+(2) so the canonical joinands are the unique minimal join representation of
+`w`: they are a minimal join representation, and every minimal join
+representation has the same members, up to the equality of `FL(X)`.  The book
+states it for `w` with a canonical join representation; for a join irreducible
+`w`, whose only canonical joinand is `w`, it holds too.
+
+`FJN-9·13`{.AgdaFunction} is Lemma 9.13: for a lattice embedding
+`σ : FL(X) → FL(Y)`, if `w₁` is a canonical joinand of `w` and not a
+generator, then `σ(w₁)` is a canonical joinand of `σ(w)`.  The embedding is a
+substitution with an injective homomorphism, which is no restriction, since
+every homomorphism of free lattices is the substitution of its values at the
+generators (`hom-induced`{.AgdaFunction} of [Lattices.Free.Substitution][]).
+The book assumes that the canonical form of `w` is a join; for a join
+irreducible `w` the hypothesis says that `w` itself is not a generator, and
+the conclusion holds too.  The book's lemma has no dual clause; the dual is
+`embedding-canonicalMeetand`{.AgdaFunction}.
+
+```agda
+-- FJN Theorem 1.19: the canonical joinands refine every join representation,
+-- and are the unique minimal join representation.
+record FJN-1·19 : Setω where
+  field
+    part-1 : ∀ {χ} {X : Type χ} (_≟_ : DecidableEquality X)
+             → {w u : LatTerm X} {us : List (LatTerm X)} → w ≈ʷ ⋁⁺ u us
+             → ∀ {c} → c ∈ canonicalJoinands _≟_ w → Any (c ≤ʷ_) (u ∷ us)
+    part-2 : ∀ {χ} {X : Type χ} (_≟_ : DecidableEquality X) (w : LatTerm X)
+             →  IsMinimalJoinRepresentation w (joinand₀ _≟_ w) (joinands₊ _≟_ w)
+                × (∀ v vs → IsMinimalJoinRepresentation w v vs
+                   →  (∀ {a} → a ∈ canonicalJoinands _≟_ w → Any (a ≈ʷ_) (v ∷ vs)) ×
+                      (∀ {b} → b ∈ v ∷ vs → Any (b ≈ʷ_) (canonicalJoinands _≟_ w)))
+
+fjn-1·19 : FJN-1·19
+fjn-1·19 = record  { part-1 = canonicalJoinands-refine
+                   ; part-2 = λ _≟_ w →  canonicalJoinands-minimal _≟_ w
+                                       , minimalJoinRepresentation-unique _≟_ w
+                   }
+
+-- FJN Lemma 9.13: an embedding of free lattices sends a canonical joinand that
+-- is not a generator to a canonical joinand of the image.
+FJN-9·13 : Setω
+FJN-9·13 =  ∀ {χ υ} {X : Type χ} {Y : Type υ}
+            (_≟ˣ_ : DecidableEquality X) (_≟ʸ_ : DecidableEquality Y)
+            (σ : Sub X Y) → IsInjective (subst-hom σ .proj₁)
+            → (w : LatTerm X) {c : LatTerm X} → c ∈ canonicalJoinands _≟ˣ_ w
+            → (∀ x → ¬ (c ≈ʷ ℊ x)) → Any (c [ σ ] ≈ʷ_) (canonicalJoinands _≟ʸ_ (w [ σ ]))
+
+fjn-9·13 : FJN-9·13
+fjn-9·13 = embedding-canonicalJoinand
 ```
