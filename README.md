@@ -2,6 +2,13 @@
 
 # agda-lattices
 
+[![check](https://github.com/ualib/agda-lattices/actions/workflows/check.yml/badge.svg?branch=main)](https://github.com/ualib/agda-lattices/actions/workflows/check.yml)
+[![site](https://github.com/ualib/agda-lattices/actions/workflows/site.yml/badge.svg?branch=main)](https://github.com/ualib/agda-lattices/actions/workflows/site.yml)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
+[![Agda 2.9.0, pre-release](https://img.shields.io/badge/Agda-2.9.0_pre--release-purple.svg)](https://github.com/agda/agda/commit/da66a8c75f11d10699a6b38b261efdf244b66f2a)
+[![stdlib 2.3, patched for Agda 2.9.0](https://img.shields.io/badge/stdlib-2.3_patched-orange.svg)](https://github.com/formalverification/agda-stdlib/releases/tag/v2.3-agda-2.9.0)
+[![DOI](https://zenodo.org/badge/1430556127.svg)](https://doi.org/10.5281/zenodo.23815018)
+
 Lattice theory in [Agda][], on top of the [Agda Universal Algebra
 Library][agda-algebras].  The library covers free lattices (lattice terms,
 Whitman's solution of the word problem, the free lattice and its universal
@@ -22,6 +29,10 @@ highlighting, every name a link to its definition, on that site or on the
 The reference throughout is R. Freese, J. Ježek and J. B. Nation, *Free
 Lattices*, Mathematical Surveys and Monographs 42, American Mathematical
 Society, 1995 (FJN below), cited by theorem number.
+
+Contributions are welcome.  [`CONTRIBUTING.md`](CONTRIBUTING.md) says how a
+contribution is checked, how a module joins the library, and what happens to
+a pull request.
 
 ## Checking it
 
