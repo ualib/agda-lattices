@@ -295,3 +295,22 @@ finite-rank-into-injective : {Y : Type υ} (m : ℕ) (y : Fin 3 ↣ Y)
 finite-rank-into-injective m y = ⨟-injective (σ-finite m) (three-generators y) (finite-injective m)
   (freelyGenerates→injective (three-generators y) (three-generators-free y))
 ```
+
+#### The statement of Theorem 1.28
+
+Theorem 1.28 is one definition whose type is the statement,
+`FJN-1·28`{.AgdaFunction}; [Lattices.Free.FJN][] lists it with the rest of
+Chapter I.  The book: `FL(3)` contains a sublattice isomorphic to `FL(ω)`.  The
+statement says that `FL(ℕ)` is a subalgebra of `FL(3)` in the sense of
+agda-algebras, through an injective homomorphism, and it quantifies over no
+level.  The proof is `countable-embedding`{.AgdaFunction}, by the book's family
+`wₙ = z ∨ (cₙ ∧ (dₙ ∨ y))` and Corollary 1.13.
+
+```agda
+-- FJN Theorem 1.28: FL(ω) is a sublattice of FL(3).
+FJN-1·28 : Type
+FJN-1·28 = FL ℕ .proj₁ IsSubalgebraOf FL (Fin 3) .proj₁
+
+fjn-1·28 : FJN-1·28
+fjn-1·28 = countable-embedding
+```

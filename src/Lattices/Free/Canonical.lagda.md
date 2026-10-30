@@ -15,7 +15,7 @@ free lattice `FL(X)`; it does not choose a name.  Every element of a free lattic
 has a term of minimal rank representing it, unique up to commutativity, its
 *canonical form* ([Freese, Ježek, and Nation (1995)][], Theorem 1.17), and Theorem
 1.18 characterizes that form by four syntactic conditions.  This is a barrel
-module: it declares nothing of its own and re-exports the five modules that
+module: it declares nothing of its own and re-exports the eight modules that
 formalize canonical forms.
 
 ### Guide to the submodules of <span class="AgdaModule">Lattices.Free.Canonical</span>
@@ -44,6 +44,10 @@ formalize canonical forms.
    term, its comparison with the binary rank, and the minimality half of
    Theorem 1.17: a canonical term has the least rank among all the terms
    representing its element;
++  [Lattices.Free.Canonical.LeastRank][]: the converse, that a term of least
+   rank is canonical, with Theorem 1.18 as a characterization of the terms of
+   least rank, the uniqueness of Theorem 1.17 for every term of least rank,
+   and the `n`-ary term a binary term abbreviates;
 +  [Lattices.Free.Canonical.JoinIrreducible][]: join irreducibility in the
    free lattice, its reading on canonical forms, and Theorem 1.20, the
    lattice-theoretic characterization of the canonical joinands, with the
@@ -58,6 +62,7 @@ open import Lattices.Free.Canonical.Algorithm       public
 open import Lattices.Free.Canonical.Basic           public
 open import Lattices.Free.Canonical.Joinands        public
 open import Lattices.Free.Canonical.JoinIrreducible public
+open import Lattices.Free.Canonical.LeastRank       public
 open import Lattices.Free.Canonical.Minimality      public
 open import Lattices.Free.Canonical.Recognition     public
 open import Lattices.Free.Canonical.Uniqueness      public

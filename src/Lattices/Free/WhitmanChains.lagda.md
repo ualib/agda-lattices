@@ -18,6 +18,8 @@ in Freese, Ježek, and Nation, *Free Lattices* (1995).
 
 module Lattices.Free.WhitmanChains where
 
+open import Agda.Primitive using () renaming ( Set to Type )
+
 open import Data.Empty using ( ⊥-elim )
 open import Data.Fin.Patterns using ( 0F )
 open import Data.Fin.Properties using ( _≟_ )
@@ -206,4 +208,34 @@ core≰y : ∀ n → ¬ (core (suc n) ≤ʷ y)
 core≰y n h =
   [ (λ e → x≰y (≤ʷ-trans (x≤ascending (suc n)) e))
   , (λ e → descending≰y n (proj₁ (∨≤-inv e))) ]′ (∧≤ℊ-inv h)
+```
+
+#### The statement of Lemma 1.29
+
+Lemma 1.29 is one definition whose type is the statement,
+`FJN-1·29`{.AgdaFunction}, a record with one field for each of its five parts;
+[Lattices.Free.FJN][] lists it with the rest of Chapter I.  In the book's
+notation `cₙ = fⁿ(x)` is `ascending n`{.AgdaFunction}, `dₙ` is
+`descending n`{.AgdaFunction}, and `wₙ = z ∨ (cₙ ∧ (dₙ ∨ y))` is
+`w n`{.AgdaFunction}; for every `n ≥ 1`, written `suc n`: (1) `y ≰ cₙ`,
+(2) `y ≰ wₙ`, (3) `cₙ ≰ z`, (4) `x ≰ dₙ`, (5) `x ≰ wₙ`.  The statement
+quantifies over no level, so it is a type at level zero.
+
+```agda
+-- FJN Lemma 1.29: five non-inequalities between the generators and the chains.
+record FJN-1·29 : Type where
+  field
+    part-1 : ∀ n → ¬ (y ≤ʷ ascending (suc n))
+    part-2 : ∀ n → ¬ (y ≤ʷ w (suc n))
+    part-3 : ∀ n → ¬ (ascending (suc n) ≤ʷ z)
+    part-4 : ∀ n → ¬ (x ≤ʷ descending (suc n))
+    part-5 : ∀ n → ¬ (x ≤ʷ w (suc n))
+
+fjn-1·29 : FJN-1·29
+fjn-1·29 = record  { part-1 = y≰ascending
+                   ; part-2 = y≰w
+                   ; part-3 = λ n → ascending≰z (suc n)
+                   ; part-4 = x≰descending
+                   ; part-5 = x≰w
+                   }
 ```

@@ -38,21 +38,24 @@ characterization, and decides the record's hypothesis for a finite lattice
 
 module Lattices.Nation where
 
-open import Agda.Primitive  using () renaming ( Set to Type )
+open import Agda.Primitive  using ( Setω ) renaming ( Set to Type )
 
 -- Imports from the Agda Standard Library ---------------------------------------
 open import Data.Fin.Base                    using ( Fin )
 open import Data.Fin.Properties              using ( _≟_ )
 open import Data.Product                     using ( _×_ ; _,_ ; proj₁ ; uncurry )
+open import Data.Sum.Base                    using ( _⊎_ )
 open import Function                         using ( _⇔_ ; mk⇔ )
 open import Level                            using ( Level ; _⊔_ ) renaming ( suc to lsuc )
+open import Relation.Binary                  using ( Setoid )
 open import Relation.Binary.Definitions      using ( DecidableEquality )
 open import Relation.Nullary.Decidable       using () renaming ( map to Dec-map )
 open import Relation.Nullary.Decidable.Core  using ( Dec ; _×-dec_ )
 open import Relation.Nullary.Negation.Core   using ( ¬_ )
 
 -- Imports from the Agda Universal Algebra Library ------------------------------
-open import Classical.Structures.Lattice.Basic  using ( Lattice )
+open import Classical.Structures.Lattice.Basic  using ( Lattice ; module Lattice-Op )
+open import Setoid.Algebras.Basic               using ( 𝔻[_] )
 open import Setoid.Algebras.Finite              using ( FiniteAlgebra )
 open import Setoid.Subalgebras.Basic            using ( _IsSubalgebraOf_ )
 
@@ -61,7 +64,7 @@ open import Lattices.Free.Semidistributive  using ( FL-satisfiesW ; FL-isSemidis
 open import Lattices.Free.Universal         using ( FL )
 open import Lattices.Semidistributive
   using  ( IsSemidistributive ; SatisfiesW ; IsSemidistributive-S-invar ; SatisfiesW-S-invar
-         ; isSemidistributive? ; satisfiesW? )
+         ; isSemidistributive? ; satisfiesW? ; W-irreducible )
 
 private variable α ρ β ρᵃ ρᵇ χ : Level
 ```
@@ -293,3 +296,35 @@ Theorem 5.55 together with elementary arguments, so as a hypothesis it is no
 weaker, and it is not cheaper to state: it needs the eight lattices and the
 sublattice relation, where the record needs two predicates the library already
 has and decides.
+
+#### The statement of Corollary 1.9
+
+Corollary 1.9 of [Freese, Ježek, and Nation (1995)][] is one definition whose
+type is the statement, `FJN-1·9`{.AgdaFunction}, a record in `Setω` with one
+field for each of its two sentences; [Lattices.Free.FJN][] lists it with the
+rest of Chapter I.  (1) Every sublattice of a free lattice satisfies (W): a
+lattice that embeds in `FL(X)` satisfies (W), for binary meets and joins as in
+[Lattices.Semidistributive][], which is equivalent to the book's n-ary (W).
+(2) Every element of a lattice satisfying (W) is join irreducible or meet
+irreducible.  Read constructively, as `W-irreducible`{.AgdaFunction} states
+it: if an element is both a join `b ∨ c` and a meet `d ∧ e`, it equals one of
+the four, so it is not both a proper join and a proper meet.  Classically the
+two readings agree.
+
+```agda
+-- FJN Corollary 1.9: sublattices of free lattices satisfy (W), and in a lattice
+-- with (W) no element is both a proper join and a proper meet.
+record FJN-1·9 : Setω where
+  field
+    part-1 : ∀ {α ρ χ} (𝑲 : Lattice α ρ) {X : Type χ} → Embeds 𝑲 (FL X) → SatisfiesW 𝑲
+    part-2 : ∀ {α ρ} (𝑳 : Lattice α ρ) → SatisfiesW 𝑳
+             → let open Lattice-Op 𝑳 using ( _∧_ ; _∨_ )
+                   open Setoid 𝔻[ 𝑳 .proj₁ ] using ( _≈_ )
+               in
+               ∀ {a b c d e} → a ≈ b ∨ c → a ≈ d ∧ e → (a ≈ d ⊎ a ≈ e) ⊎ (a ≈ b ⊎ a ≈ c)
+
+fjn-1·9 : FJN-1·9
+fjn-1·9 = record  { part-1 = embeds→SatisfiesW
+                  ; part-2 = W-irreducible
+                  }
+```

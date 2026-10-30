@@ -39,12 +39,12 @@ embedding of `FL(3)` composed with Whitman's strict chain of Example 1.24
 
 module Lattices.Breadth where
 
-open import Agda.Primitive  using () renaming ( Set to Type )
+open import Agda.Primitive  using ( Setω ) renaming ( Set to Type )
 
 -- Imports from the Agda Standard Library ---------------------------------------
 open import Data.Empty                             using ( ⊥ ; ⊥-elim )
 open import Data.Fin.Base                          using ( Fin ; zero ; suc ; toℕ )
-open import Data.Fin.Patterns                      using ( 0F ; 1F ; 2F ; 3F ; 4F )
+open import Data.Fin.Patterns                      using ( 0F ; 1F ; 2F ; 3F ; 4F ; 5F )
 open import Data.Fin.Properties                    using ( _≟_ ; pigeonhole )
 open import Data.List.Base                         using ( List ; [] ; _∷_ ; _++_ ; length ; removeAt )
 open import Data.List.Membership.Propositional     using ( _∈_ ; _─_ )
@@ -63,23 +63,27 @@ open import Level                                  using ( Level ; _⊔_ )
 open import Relation.Binary                        using ( Setoid )
 open import Relation.Binary.PropositionalEquality  using ( _≡_ ; refl ; cong ; sym )
 open import Relation.Nullary                       using ( ¬_ )
-open import Relation.Nullary.Decidable.Core        using ( Dec ; yes ; no ; map′ )
+open import Relation.Nullary.Decidable.Core        using ( Dec ; yes ; no ; map′ ; from-no )
 
+import Data.Fin.Properties  as Fin
 import Data.Nat.Base        as Nat
 import Data.Nat.Properties  as Nat
 
 -- Imports from the Agda Universal Algebra Library ------------------------------
 open import Classical.Properties.Lattice        using ( module Lattice-Order )
 open import Classical.Structures.Lattice.Basic  using ( Lattice ; module Lattice-Op )
-open import Lattices.Free.Universal             using ( FL )
-open import Lattices.Free.Whitman               using ( _≈ʷ_ )
+open import Lattices.Free.Semidistributive      using ( FL-satisfiesW )
+open import Lattices.Free.Term                  using ( LatTerm ; ℊ ; _∧̇_ ; _∨̇_ )
+open import Lattices.Free.Universal             using ( FL ; ≤→≤ʷ )
+open import Lattices.Free.Whitman               using ( _≈ʷ_ ; module Decision )
 open import Lattices.Free.WhitmanChains         using ( ascending-reflects )
 open import Lattices.Free.WhitmanPolynomials    using ( ascending )
 open import Lattices.Generation
   using  ( ⋁⁺ ; _≤⋁_ ; ≤⋁⁺ ; ⋁⁺-upper ; ⋁⁺-least ; ≤-≤⋁ ; ∨-≤⋁ ; ≤⋁-⊆ ; ≤⋁-elim ; ≤⋁-nonempty
          ; ∈→≤⋁ ; ⋁⁺-≤⋁
          ; FreelyGenerates ; bound→JoinCondition ; bound→MeetCondition ; freelyGenerates→≤ )
-open import Lattices.Semidistributive           using ( SatisfiesW ; W-irreducible )
+open import Lattices.Semidistributive           using ( SatisfiesW ; W-irreducible
+                                                      ; SatisfiesW-S-invar )
 open import Setoid.Algebras.Basic               using ( 𝔻[_] ; 𝕌[_] )
 open import Setoid.Algebras.Finite              using ( FiniteAlgebra )
 open import Setoid.Subalgebras.Basic            using ( _IsSubalgebraOf_ )
@@ -738,4 +742,99 @@ module _ (𝑳 : Lattice α ρ) where
 finite-W→fourDistributive : (𝑳 : Lattice α ρ) → FiniteAlgebra (proj₁ 𝑳) → SatisfiesW 𝑳
                           → IsFourDistributive 𝑳
 finite-W→fourDistributive 𝑳 𝑭 W = breadth≤4→fourDistributive 𝑳 (breadth≤4 𝑳 𝑭 W)
+```
+
+#### The 4-distributive law is not an identity of all lattices
+
+The 4-distributive law fails in `FL(6)`, at its six generators
+(`fourDistributive-fails`{.AgdaFunction}): the one inequality it asserts there
+between two terms is refuted by Whitman's procedure.  So it is a nontrivial
+lattice equation, and the lattices satisfying it, among them every finite
+lattice with (W), form a variety that is not the variety of all lattices.  The
+book cites the lattice of subspaces of a 5-dimensional vector space instead;
+any lattice that fails the law serves, and the free lattice is the one the
+library decides.
+
+```agda
+module _ where
+  open Decision (Fin._≟_ {6}) using ( _≤ʷ?_ )
+
+  private
+    -- The six generators of FL(6).
+    x₀ x₁ x₂ x₃ x₄ x₅ : LatTerm (Fin 6)
+    x₀ = ℊ 0F
+    x₁ = ℊ 1F
+    x₂ = ℊ 2F
+    x₃ = ℊ 3F
+    x₄ = ℊ 4F
+    x₅ = ℊ 5F
+
+  -- The 4-distributive law fails in FL(6), at its six generators.
+  fourDistributive-fails : ¬ IsFourDistributive (FL (Fin 6))
+  fourDistributive-fails fd = from-no (lhs ≤ʷ? rhs) (≤→≤ʷ (fd x₀ x₁ x₂ x₃ x₄ x₅))
+    where
+    lhs rhs : LatTerm (Fin 6)
+    lhs = x₀ ∧̇ (x₁ ∨̇ x₂ ∨̇ x₃ ∨̇ x₄ ∨̇ x₅)
+    rhs =  (x₀ ∧̇ (x₂ ∨̇ x₃ ∨̇ x₄ ∨̇ x₅)) ∨̇ (x₀ ∧̇ (x₁ ∨̇ x₃ ∨̇ x₄ ∨̇ x₅))
+           ∨̇ (x₀ ∧̇ (x₁ ∨̇ x₂ ∨̇ x₄ ∨̇ x₅)) ∨̇ (x₀ ∧̇ (x₁ ∨̇ x₂ ∨̇ x₃ ∨̇ x₅))
+           ∨̇ (x₀ ∧̇ (x₁ ∨̇ x₂ ∨̇ x₃ ∨̇ x₄))
+```
+
+#### The statements of Theorem 1.30 and Corollary 1.31
+
+Each of the two results is one definition whose type is the statement, with
+its proof beside it, a type in `Setω` since it quantifies over the levels of
+the lattices; [Lattices.Free.FJN][] lists them with the rest of Chapter I.  A
+statement in several parts is a record with one field per part.  (W) is the
+binary form of [Lattices.Semidistributive][], equivalent to the book's in
+every lattice, and "`L` has a sublattice isomorphic to `FL(3)`" is
+`FL(3)` being a subalgebra of `L`, through an injective homomorphism.
+
+`FJN-1·30`{.AgdaFunction} is Theorem 1.30 (Jónsson and Kiefer): a lattice
+satisfying (W) with elements `a₁, a₂, a₃, v` such that (1)
+`aᵢ ≰ aⱼ ∨ aₖ ∨ v` for `{i, j, k} = {1, 2, 3}`, (2) `v ≰ aᵢ`, and (3) `v` is
+meet irreducible, has a sublattice isomorphic to `FL(3)`.
+
+`FJN-1·31`{.AgdaFunction} is Corollary 1.31, whose three sentences are four
+parts here: (1) a finite lattice satisfying (W) has breadth at most 4; the
+second sentence, that the variety generated by the finite lattices satisfying
+(W) is not the variety of all lattices, is a nontrivial equation they all
+satisfy, the 4-distributive law, so it is (2) every finite lattice satisfying
+(W) is 4-distributive and (3) not every lattice is, `FL(6)` failing it; and
+(4) a finite sublattice of a free lattice has breadth at most 4 and is
+4-distributive.  "Finite" is `FiniteAlgebra`{.AgdaFunction} of agda-algebras.
+
+```agda
+-- FJN Theorem 1.30 (Jónsson and Kiefer): a lattice with (W) and four elements
+-- as in (1) to (3) contains FL(3).
+FJN-1·30 : Setω
+FJN-1·30 =  ∀ {α ρ} (𝑳 : Lattice α ρ) → SatisfiesW 𝑳
+            → let open Lattice-Op 𝑳 using ( _∨_ ) ; open Lattice-Order 𝑳 using ( _≤_ ) in
+              (a : Fin 3 → 𝕌[ 𝑳 .proj₁ ]) (v : 𝕌[ 𝑳 .proj₁ ])
+            → (∀ i → ¬ (a i ≤ a (other₁ i) ∨ a (other₂ i) ∨ v)) → (∀ i → ¬ (v ≤ a i))
+            → MeetIrreducible 𝑳 v → FL (Fin 3) .proj₁ IsSubalgebraOf 𝑳 .proj₁
+
+fjn-1·30 : FJN-1·30
+fjn-1·30 = theorem-1-30
+
+-- FJN Corollary 1.31: finite lattices with (W), and finite sublattices of free
+-- lattices, have breadth at most 4 and satisfy a nontrivial equation.
+record FJN-1·31 : Setω where
+  field
+    part-1 : ∀ {α ρ} (𝑳 : Lattice α ρ) → FiniteAlgebra (𝑳 .proj₁) → SatisfiesW 𝑳 → Breadth≤ 𝑳 4
+    part-2 : ∀ {α ρ} (𝑳 : Lattice α ρ) → FiniteAlgebra (𝑳 .proj₁) → SatisfiesW 𝑳
+             → IsFourDistributive 𝑳
+    part-3 : ¬ IsFourDistributive (FL (Fin 6))
+    part-4 : ∀ {α ρ χ} (𝑲 : Lattice α ρ) {X : Type χ} → FiniteAlgebra (𝑲 .proj₁)
+             → 𝑲 .proj₁ IsSubalgebraOf FL X .proj₁ → Breadth≤ 𝑲 4 × IsFourDistributive 𝑲
+
+fjn-1·31 : FJN-1·31
+fjn-1·31 = record
+  { part-1 = breadth≤4
+  ; part-2 = finite-W→fourDistributive
+  ; part-3 = fourDistributive-fails
+  ; part-4 = λ 𝑲 {X} 𝑭 sub →
+               let W = SatisfiesW-S-invar 𝑲 (FL X) sub FL-satisfiesW
+               in  breadth≤4 𝑲 𝑭 W , finite-W→fourDistributive 𝑲 𝑭 W
+  }
 ```

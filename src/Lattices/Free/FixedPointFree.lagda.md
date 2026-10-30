@@ -22,8 +22,11 @@ all representations.
 
 module Lattices.Free.FixedPointFree where
 
+open import Agda.Primitive using () renaming ( Set to Type )
+
 open import Data.Empty using ( ⊥ ; ⊥-elim )
 open import Data.Fin.Base using ( Fin )
+open import Data.Fin.Patterns using ( 0F )
 open import Data.Fin.Properties using ( _≟_ )
 open import Data.List.Base using ( List ; [] ; _∷_ )
 open import Data.List.Membership.Propositional using ( _∈_ ; find )
@@ -54,7 +57,7 @@ open import Lattices.Free.Whitman
   using ( _≤ʷ_ ; _≈ʷ_ ; ≤ʷ-refl ; ≤ʷ-trans ; ∨≤ ; ∨̇-upperˡ
         ; ∨̇-upperʳ ; ∧̇-lowerʳ )
 open import Lattices.Free.WhitmanPolynomials
-  using ( Term₃ ; rot ; a ; b ; c ; r ; p ; q ; r-step ; r-cong ; p-mono
+  using ( Term₃ ; f₁ ; rot ; a ; b ; c ; r ; p ; q ; r-step ; r-cong ; p-mono
         ; p-cong ; q-cong ; a≰c ; b≰p ; c≰p ; p-a≰a )
 ```
 
@@ -261,4 +264,23 @@ p-fixed-point-free k u fixed =
 -- The three dual polynomials have no fixed points either.
 q-fixed-point-free : (k : Fin 3) (u : Term₃) → ¬ (q k u ≈ʷ u)
 q-fixed-point-free k u fixed = p-fixed-point-free k (dual u) (dual-cong fixed)
+```
+
+#### The statement of Theorem 1.23
+
+Theorem 1.23 is one definition whose type is the statement,
+`FJN-1·23`{.AgdaFunction}; [Lattices.Free.FJN][] lists it with the rest of
+Chapter I.  The book: the polynomial `f = f₁`, `f(u) = p(u, x, y, z)`, is fixed
+point free on `FL(3)`, that is, `f(w) = w` holds for no `w`.  The statement
+quantifies over no level, so it is a type at level zero.  The proof above
+gives more, as the book's does: all six polynomials are fixed point free
+(`p-fixed-point-free`{.AgdaFunction}, `q-fixed-point-free`{.AgdaFunction}).
+
+```agda
+-- FJN Theorem 1.23: f₁ has no fixed point in FL(3).
+FJN-1·23 : Type
+FJN-1·23 = (w : Term₃) → ¬ (f₁ w ≈ʷ w)
+
+fjn-1·23 : FJN-1·23
+fjn-1·23 = p-fixed-point-free 0F
 ```

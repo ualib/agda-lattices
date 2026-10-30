@@ -51,6 +51,13 @@ construction as in the book.
 +  [Lattices.Free.Generation][]: free generating sets
    (Corollaries 1.12 and 1.13, with Lemma 1.3), their decision procedure, and the
    irreducibility of free generators (Corollary 1.6);
++  [Lattices.Free.Prime][]: Lemma 1.2, and Lemma 1.4 and Corollaries 1.5
+   and 1.6 of [Lattices.Prime][] read in `FL(X)`, with the automorphism group
+   of `FL(X)` the symmetric group on `X`;
++  [Lattices.Free.Small][]: `FL(X)` for `X` with at most two elements, with
+   0, 1 and 4 elements;
++  [Lattices.Free.Extrema][]: `FL(X)` has a least and a greatest element
+   exactly when `X` has a finite nonempty enumeration;
 +  [Lattices.Free.WhitmanPolynomials][]: the six polynomials preceding
    Theorem 1.23, the chains of Example 1.24, and the family of Theorem 1.28;
 +  [Lattices.Free.FixedPointFree][]: Theorem 1.23, proved by descent on
@@ -62,18 +69,28 @@ construction as in the book.
    three and of any finite rank into every finite rank at least three;
 +  [Lattices.Free.Embedding][]: Lemma 9.13 (an embedding of
    free lattices sends a canonical joinand that is not a generator to a canonical
-   joinand), its dual, its reading up to equality in the free lattice, and the
-   canonical joinands and meetands of an image;
+   joinand), its dual, its reading up to equality in the free lattice, the
+   canonical joinands and meetands of an image, and the canonical joinands as
+   the unique minimal join representation (Theorem 1.19);
 +  [Lattices.Free.Complexity][]: the complexity of an element (the depth of
    its canonical form), which a lattice embedding never lowers, and the
    finiteness of the elements of bounded complexity over finitely many
-   generators.
+   generators;
++  [Lattices.Free.Membership][]: membership in a finitely generated sublattice
+   of a free lattice, decided by the least preimage (Corollary 2.8).
 
 Two worked examples go with these modules:
 [Lattices.Examples.FreeLattice3][] decides a few inequalities in `FL(3)` by
 evaluation and computes some canonical forms, and
 [Lattices.Examples.CountableFree][] decides that the first members of Whitman's
 countable family freely generate.
+
+A module that proves a result of the book in full also states it as one
+definition, `WhitmansTheorem`{.AgdaRecord} for Theorem 1.11 or
+`FJN-1·19`{.AgdaRecord} for Theorem 1.19, say.  [Lattices.Free.FJN][] lists
+them all, with those of [Lattices.Prime][], [Lattices.Generation][],
+[Lattices.Nation][] and [Lattices.Breadth][], in the book's order; it is not
+in this barrel, since it imports those four modules.
 
 ```agda
 {-# OPTIONS --without-K --exact-split --safe #-}
@@ -86,10 +103,14 @@ open import Lattices.Free.Countable         public
 open import Lattices.Free.Derivability      public
 open import Lattices.Free.Duality           public
 open import Lattices.Free.Embedding         public
+open import Lattices.Free.Extrema           public
 open import Lattices.Free.FixedPointFree    public
   using ( p-fixed-point-free ; q-fixed-point-free )
 open import Lattices.Free.Generation        public
+open import Lattices.Free.Membership        public
+open import Lattices.Free.Prime             public
 open import Lattices.Free.Semidistributive  public
+open import Lattices.Free.Small             public
 open import Lattices.Free.Substitution      public
 open import Lattices.Free.Term              public
 open import Lattices.Free.Universal         public

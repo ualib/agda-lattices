@@ -41,13 +41,19 @@ checks in 0.2 s of its own (measured 2026-10-22).
 
 module Lattices.Semidistributive.FiniteJoins where
 
+open import Agda.Primitive  using () renaming ( Set to Type )
+
 -- Imports from the Agda Standard Library ---------------------------------------
-open import Data.List.Base                                 using ( List ; [] ; _∷_ ; map ; foldr )
+open import Data.List.Base                                 using ( List ; [] ; _∷_ ; map ; foldr
+                                                                 ; cartesianProductWith )
 open import Data.List.Membership.Propositional             using ( _∈_ )
-open import Data.List.Membership.Propositional.Properties  using ( ∈-map⁺ ; ∈-map⁻ )
+open import Data.List.Membership.Propositional.Properties  using ( ∈-map⁺ ; ∈-map⁻
+                                                                 ; ∈-cartesianProductWith⁺
+                                                                 ; ∈-cartesianProductWith⁻ )
 open import Data.List.Relation.Unary.Any                   using ( here ; there )
 open import Data.Product                                   using ( _,_ ; proj₁ )
-open import Level                                          using ( Level )
+open import Function                                       using ( _⇔_ ; mk⇔ )
+open import Level                                          using ( Level ; _⊔_ )
 open import Relation.Binary                                using ( Setoid )
 open import Relation.Binary.PropositionalEquality          using ( refl ) renaming ( sym to ≡-sym )
 
@@ -214,3 +220,87 @@ since a join over the base `v` of no elements is `v`.
         meet≤z m∈ with ∈-map⁻ (a ∧_) m∈
         ... | _ , b∈ , m≡ = ≤-respˡ-≈ (reflexive (≡-sym m≡)) (f (here refl) b∈)
       ```
+
+#### The book's form of the finite law
+
+The book's statement (3) is an equation between joins of nonempty lists:
+`w = ⋁ᵢ aᵢ = ⋁ⱼ bⱼ` implies `w = ⋁ᵢⱼ (aᵢ ∧ bⱼ)`.  A nonempty list is a head
+and a tail, and its join is the join of the tail over the head, so `⋁ᵢ aᵢ` is
+`as ∨* a`; the join of the pairwise meets is taken over the base `a ∧ b`,
+which is one of them (`IsFiniteJoinSemidistributive`{.AgdaFunction}).  The
+binary law gives it (`joinSemidistributive→finite`{.AgdaFunction}): the two
+joins over the base `a ∧ b`, which lies below both heads, are the joins of the
+two lists (`head-base`{.AgdaFunction}), and `⋁-meets-below`{.AgdaFunction}
+bounds `w` by the join of the meets.  Conversely it gives the binary law
+(`finite→joinSemidistributive`{.AgdaFunction}): for `a ∨ b = a ∨ c`, apply it
+to the lists `a, b` and `a, c`; of the four meets, three lie below `a` and the
+fourth is `b ∧ c`.  So the two are equivalent in every lattice
+(`joinSemidistributive⇔finite`{.AgdaFunction}), the book's "Moreover".
+
+```agda
+module _ (𝑳 : Lattice α ρ) where
+  open Lattice-Op 𝑳          using ( _∧_ ; _∨_ ; ∨-comm-law )
+  open Lattice-Order 𝑳       using ( _≤_ ; ≤-refl ; ≤-trans ; ≤-antisym ; ≤-respˡ-≈ ; ≤-respʳ-≈
+                                   ; ∧-lowerˡ ; ∧-lowerʳ ; ∨-upperˡ ; ∨-upperʳ ; ∨-least )
+  open Setoid 𝔻[ proj₁ 𝑳 ]   using ( _≈_ ; sym ; trans ; reflexive )
+
+  -- The book's (3): two joins of nonempty lists that agree are the join of the pairwise meets.
+  IsFiniteJoinSemidistributive : Type (α ⊔ ρ)
+  IsFiniteJoinSemidistributive = ∀ a as b bs → _∨*_ 𝑳 as a ≈ _∨*_ 𝑳 bs b
+    → _∨*_ 𝑳 as a ≈ _∨*_ 𝑳 (cartesianProductWith _∧_ (a ∷ as) (b ∷ bs)) (a ∧ b)
+
+  -- Over a base below the head, the join of a list is the join of its tail over its head.
+  head-base : ∀ a as {v} → v ≤ a → _∨*_ 𝑳 (a ∷ as) v ≈ _∨*_ 𝑳 as a
+  head-base a as {v} v≤a =
+    ≤-antisym  (∨*-least 𝑳 (a ∷ as)
+                 (λ { (here refl) → ∨*-base 𝑳 as ; (there a′∈) → ∨*-upper 𝑳 {as = as} a′∈ })
+                 (≤-trans v≤a (∨*-base 𝑳 as)))
+               (∨*-least 𝑳 as (λ a′∈ → ∨*-upper 𝑳 {as = a ∷ as} {v = v} (there a′∈))
+                              (∨*-upper 𝑳 {as = a ∷ as} {v = v} (here refl)))
+
+  -- (SD∨) gives the book's (3).
+  joinSemidistributive→finite : IsJoinSemidistributive 𝑳 → IsFiniteJoinSemidistributive
+  joinSemidistributive→finite sd a as b bs e =
+    ≤-antisym  (≤-respˡ-≈ (head-base a as ∧-lowerˡ) w≤z)
+               (∨*-least 𝑳 pairs pair≤w (≤-trans ∧-lowerˡ (∨*-base 𝑳 as)))
+    where
+    pairs : List 𝕌[ proj₁ 𝑳 ]
+    pairs = cartesianProductWith _∧_ (a ∷ as) (b ∷ bs)
+
+    -- The two lists, over the base a ∧ b, have the same join.
+    e′ : _∨*_ 𝑳 (a ∷ as) (a ∧ b) ≈ _∨*_ 𝑳 (b ∷ bs) (a ∧ b)
+    e′ = trans (head-base a as ∧-lowerˡ) (trans e (sym (head-base b bs ∧-lowerʳ)))
+
+    w≤z : _∨*_ 𝑳 (a ∷ as) (a ∧ b) ≤ _∨*_ 𝑳 pairs (a ∧ b)
+    w≤z = ⋁-meets-below 𝑳 sd (a ∷ as) (b ∷ bs) e′ (∨*-base 𝑳 pairs)
+            (λ a′∈ b′∈ → ∨*-upper 𝑳 {as = pairs} (∈-cartesianProductWith⁺ _∧_ a′∈ b′∈))
+
+    -- Each pairwise meet lies below its first meetand, a member of the first list.
+    pair≤w : ∀ {m} → m ∈ pairs → m ≤ _∨*_ 𝑳 as a
+    pair≤w m∈ with ∈-cartesianProductWith⁻ _∧_ (a ∷ as) (b ∷ bs) m∈
+    ... | _ , _ , here refl , _ , refl = ≤-trans ∧-lowerˡ (∨*-base 𝑳 as)
+    ... | _ , _ , there u∈ , _ , refl = ≤-trans ∧-lowerˡ (∨*-upper 𝑳 {as = as} u∈)
+
+  -- The book's (3) gives (SD∨).
+  finite→joinSemidistributive : IsFiniteJoinSemidistributive → IsJoinSemidistributive 𝑳
+  finite→joinSemidistributive fsd a b c e =
+    ≤-antisym  (≤-respˡ-≈ (trans (sym four) (∨-comm-law {b} {a})) bound)
+               (∨-least ∨-upperˡ (≤-trans ∧-lowerˡ ∨-upperʳ))
+    where
+    -- The lists a, b and a, c have the same join.
+    four : _∨*_ 𝑳 (b ∷ []) a ≈ _∨*_ 𝑳 ((a ∧ a) ∷ (a ∧ c) ∷ (b ∧ a) ∷ (b ∧ c) ∷ []) (a ∧ a)
+    four = fsd a (b ∷ []) a (c ∷ []) (trans (∨-comm-law {b} {a}) (trans e (∨-comm-law {a} {c})))
+
+    -- Three of the four meets lie below a, the fourth is b ∧ c.
+    bound : _∨*_ 𝑳 ((a ∧ a) ∷ (a ∧ c) ∷ (b ∧ a) ∷ (b ∧ c) ∷ []) (a ∧ a) ≤ a ∨ (b ∧ c)
+    bound = ∨*-least 𝑳 ((a ∧ a) ∷ (a ∧ c) ∷ (b ∧ a) ∷ (b ∧ c) ∷ [])
+      (λ { (here refl)                          → ≤-trans ∧-lowerˡ ∨-upperˡ
+         ; (there (here refl))                  → ≤-trans ∧-lowerˡ ∨-upperˡ
+         ; (there (there (here refl)))          → ≤-trans ∧-lowerʳ ∨-upperˡ
+         ; (there (there (there (here refl))))  → ∨-upperʳ })
+      (≤-trans ∧-lowerˡ ∨-upperˡ)
+
+  -- In every lattice, (SD∨) is equivalent to the book's (3).
+  joinSemidistributive⇔finite : IsJoinSemidistributive 𝑳 ⇔ IsFiniteJoinSemidistributive
+  joinSemidistributive⇔finite = mk⇔ joinSemidistributive→finite finite→joinSemidistributive
+```
