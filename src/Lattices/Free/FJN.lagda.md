@@ -12,11 +12,13 @@ This is the [Lattices.Free.FJN][] module of the [agda-lattices][] library.
 
 The library proves the results of [Freese, Ježek, and Nation (1995)][]
 (FJN) under descriptive names, and a theorem is often spread over several of
-them.  This module gathers, for each result of the book that the library
-proves, one definition whose type is the statement and one proof of it, and
-re-exports them in the book's order.  It proves nothing itself: each statement
-and its proof live in the module that proves the result, built from the names
-there, and the table below names that module.
+them.  This module gathers, for each result of the book's Chapter I that the
+library proves in full, and for Lemma 9.13, one definition whose type is the
+statement and one proof of it, and re-exports them in the book's order.  The
+library's results from other chapters (Theorem 5.1 and Corollary 5.2 in
+[Lattices.Projective][], say) keep their descriptive names only.  It proves
+nothing itself: each statement and its proof live in the module that proves
+the result, built from the names there, and the table below names that module.
 
 The conventions are as follows:
 
@@ -148,3 +150,4 @@ open import Lattices.Free.Embedding             public
 [Lattices.Generation]: Lattices.Generation.html
 [Lattices.Nation]: Lattices.Nation.html
 [Lattices.Prime]: Lattices.Prime.html
+[Lattices.Projective]: Lattices.Projective.html

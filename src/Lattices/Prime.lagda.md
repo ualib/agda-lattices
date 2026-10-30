@@ -16,7 +16,9 @@ one condition on `X`:
 
 > (†)  `⋀S ≤ ⋁T` implies `S ∩ T ≠ ∅`, for all finite subsets `S` and `T` of `X`,
 
-which holds in every relatively free lattice (Lemma 1.2).  The sets `S` and
+which holds in every relatively free lattice of a nontrivial variety (Lemma
+1.2); in the trivial variety the relatively free lattice has one element, and
+(†) fails for any two disjoint nonempty sets.  The sets `S` and
 `T` are nonempty, as in Lemma 1.4 (3): a lattice need not have an empty meet
 or join, and where it has both, as `FL(X)` has for a finite nonempty `X`, the
 empty meet is the top `⋁X`, and (†) fails for `S = ∅` and `T = X`.  This
