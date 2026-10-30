@@ -15,6 +15,8 @@
 [Lattices.Breadth]: /Lattices/Breadth.md
 [Lattices.Central]: /Lattices/Central.md
 [Lattices.Central.Decomposition]: /Lattices/Central/Decomposition.md
+[Lattices.DirectLimit]: /Lattices/DirectLimit.md
+[Lattices.DirectLimit.Union]: /Lattices/DirectLimit/Union.md
 [Lattices.Distributive]: /Lattices/Distributive.md
 [Lattices.Distributive.Bundle]: /Lattices/Distributive/Bundle.md
 [Lattices.Distributive.Small]: /Lattices/Distributive/Small.md
@@ -40,6 +42,7 @@
 [Lattices.Free.Canonical.Basic]: /Lattices/Free/Canonical/Basic.md
 [Lattices.Free.Canonical.JoinIrreducible]: /Lattices/Free/Canonical/JoinIrreducible.md
 [Lattices.Free.Canonical.Joinands]: /Lattices/Free/Canonical/Joinands.md
+[Lattices.Free.Canonical.LeastRank]: /Lattices/Free/Canonical/LeastRank.md
 [Lattices.Free.Canonical.Minimality]: /Lattices/Free/Canonical/Minimality.md
 [Lattices.Free.Canonical.Recognition]: /Lattices/Free/Canonical/Recognition.md
 [Lattices.Free.Canonical.Uniqueness]: /Lattices/Free/Canonical/Uniqueness.md
@@ -48,9 +51,14 @@
 [Lattices.Free.Derivability]: /Lattices/Free/Derivability.md
 [Lattices.Free.Duality]: /Lattices/Free/Duality.md
 [Lattices.Free.Embedding]: /Lattices/Free/Embedding.md
+[Lattices.Free.Extrema]: /Lattices/Free/Extrema.md
+[Lattices.Free.FJN]: /Lattices/Free/FJN.md
 [Lattices.Free.FixedPointFree]: /Lattices/Free/FixedPointFree.md
 [Lattices.Free.Generation]: /Lattices/Free/Generation.md
+[Lattices.Free.Membership]: /Lattices/Free/Membership.md
+[Lattices.Free.Prime]: /Lattices/Free/Prime.md
 [Lattices.Free.Semidistributive]: /Lattices/Free/Semidistributive.md
+[Lattices.Free.Small]: /Lattices/Free/Small.md
 [Lattices.Free.Substitution]: /Lattices/Free/Substitution.md
 [Lattices.Free.Term]: /Lattices/Free/Term.md
 [Lattices.Free.Universal]: /Lattices/Free/Universal.md
@@ -82,11 +90,13 @@
 [Lattices.Nation.Order]: /Lattices/Nation/Order.md
 [Lattices.Nation.Subsequences]: /Lattices/Nation/Subsequences.md
 [Lattices.OrdinalSum]: /Lattices/OrdinalSum.md
+[Lattices.Prime]: /Lattices/Prime.md
 [Lattices.Product]: /Lattices/Product.md
 [Lattices.Projective]: /Lattices/Projective.md
 [Lattices.Quotient]: /Lattices/Quotient.md
 [Lattices.Semidistributive]: /Lattices/Semidistributive.md
 [Lattices.Semidistributive.FiniteJoins]: /Lattices/Semidistributive/FiniteJoins.md
+[Lattices.Sublattice]: /Lattices/Sublattice.md
 [Lattices.Table]: /Lattices/Table.md
 
 <!-- ===== The Agda Universal Algebra Library's module pages ===== -->
@@ -117,6 +127,7 @@
 [Setoid.Homomorphisms.Properties]: https://agda-algebras.universalalgebra.org/Setoid/Homomorphisms/Properties/
 [Setoid.Subalgebras.Basic]: https://agda-algebras.universalalgebra.org/Setoid/Subalgebras/Basic/
 [Setoid.Subalgebras.Properties]: https://agda-algebras.universalalgebra.org/Setoid/Subalgebras/Properties/
+[Setoid.Subalgebras.Subuniverses]: https://agda-algebras.universalalgebra.org/Setoid/Subalgebras/Subuniverses/
 [Setoid.Terms.Basic]: https://agda-algebras.universalalgebra.org/Setoid/Terms/Basic/
 [Setoid.Varieties.EquationalLogic]: https://agda-algebras.universalalgebra.org/Setoid/Varieties/EquationalLogic/
 [Setoid.Varieties.Properties]: https://agda-algebras.universalalgebra.org/Setoid/Varieties/Properties/
