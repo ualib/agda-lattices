@@ -141,6 +141,10 @@ extra_javascript:
   # The header's "Show all Agda" switch for the import scaffolding the
   # sources hide (mkdocs_gen_library.reveal_hidden_agda).
   - assets/js/agda-toggle.js
+  # The landing page's figures count up from zero when the strip comes into
+  # view.  The counted values are in the HTML already; with this script
+  # absent, off, or under reduced motion, the page simply shows them.
+  - assets/js/stats-count.js
 
 # -- Plugins ------------------------------------------------------------------
 # Order matters: gen-files writes the pages and SUMMARY.md before
