@@ -1,8 +1,7 @@
 """MkDocs build hooks for the agda-lattices site.
 
 Adapted from the hooks of the Agda Universal Algebra Library's site (its
-``scripts/python/mkdocs_hooks.py``, Apache-2.0; see NOTICE), less the
-landing-page statistics, which that site alone has.
+``scripts/python/mkdocs_hooks.py``, Apache-2.0; see NOTICE).
 
 `on_page_markdown` rewrites the *repo-relative* links that the prose uses for
 GitHub viewing into links MkDocs resolves, so cross-references work on the
@@ -23,6 +22,11 @@ Only link targets OUTSIDE fenced code blocks are touched, so Agda source is
 never altered.  External (http, mailto), root-relative (/...) and pure-anchor
 (#...) targets pass through unchanged.
 
+On the landing page, `on_page_markdown` first writes the counted figures into
+its `<!-- ualib:stat:NAME -->` markers, by the functions `make corpus-stats`
+and its CI check use (corpus_stats.py), so the deployed page and the committed
+source cannot disagree.
+
 `on_config` gives the site's own stylesheets and scripts a content hash in
 their URLs, so a returning reader never pairs a new page with a stale cached
 stylesheet.
@@ -34,7 +38,14 @@ import logging
 import posixpath
 import re
 import subprocess
+import sys
 from pathlib import Path
+
+_SCRIPT_DIR = Path(__file__).resolve().parent
+if str(_SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPT_DIR))
+
+from corpus_stats import fill, landing_values  # noqa: E402
 
 log = logging.getLogger("mkdocs.plugins.lattices.render")
 
@@ -146,11 +157,32 @@ def on_files(files, config):
     return files
 
 
+def fill_corpus_stats(markdown: str) -> str:
+    """The landing page with its stat markers holding freshly counted values.
+
+    A failure to count (a toolchain file whose shape changed, say) leaves the
+    committed values in place and warns.  They are gated by CI, so they are
+    the right fallback, and the warning stops `mkdocs build --strict`, which
+    is `make site`: the same failure fails the gate on the same commit.
+    """
+    values = landing_values()
+    if values.is_err:
+        log.warning(f"corpus stats not recomputed: {values.unwrap_err().message}")
+        return markdown
+    counted = values.unwrap()
+    log.info(f"corpus stats: {counted['modules']} modules, "
+             f"{counted['loc']} lines of Agda, {counted['checked']} machine-checked, "
+             f"Agda {counted['agda']} · stdlib {counted['stdlib']}")
+    return fill(markdown, counted)
+
+
 def on_page_markdown(markdown: str, *, page=None, config=None, files=None) -> str:
     global _done
     _done += 1
 
     src_uri = getattr(getattr(page, "file", None), "src_uri", None) or ""
+    if src_uri == "index.md":
+        markdown = fill_corpus_stats(markdown)
     page_dir = posixpath.dirname(src_uri)
     out: list[str] = []
     in_code = False

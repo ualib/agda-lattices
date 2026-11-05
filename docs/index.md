@@ -23,6 +23,17 @@ Agda under `--without-K --exact-split --safe`.
 
 </div>
 
+<div class="ualib-stats">
+  <!-- Counted, not typed: scripts/python/corpus_stats.py writes these figures
+       into the markers below (`make corpus-stats`), and CI fails when a
+       committed value has drifted from the tree (`make corpus-stats-check`).
+       Do not edit them by hand. -->
+  <div class="ualib-stat"><span class="ualib-stat__num"><!-- ualib:stat:modules -->91<!-- /ualib:stat:modules --></span><span class="ualib-stat__label">literate modules</span></div>
+  <div class="ualib-stat"><span class="ualib-stat__num"><!-- ualib:stat:loc -->24k<!-- /ualib:stat:loc --></span><span class="ualib-stat__label">lines of Agda</span></div>
+  <div class="ualib-stat"><span class="ualib-stat__num"><!-- ualib:stat:checked -->100%<!-- /ualib:stat:checked --></span><span class="ualib-stat__label">machine-checked</span></div>
+  <div class="ualib-stat"><span class="ualib-stat__num"><!-- ualib:stat:agda -->2.9.0<!-- /ualib:stat:agda --></span><span class="ualib-stat__label">Agda · stdlib <!-- ualib:stat:stdlib -->2.3<!-- /ualib:stat:stdlib --></span></div>
+</div>
+
 ## What it is
 
 agda-lattices is a library of general lattice theory, written in literate

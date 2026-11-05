@@ -38,6 +38,10 @@
 #   make theme-check         The theme's files against agda-algebras at
 #                            THEME_REV (needs the network).
 #   make site-test           The site tools' own tests.
+#   make corpus-stats        Count the landing page's four figures from the
+#                            tree and write them into docs/index.md.
+#   make corpus-stats-check  Fail, with a diff, when a committed figure has
+#                            drifted from the tree (CI runs it).
 #
 # Variables:
 #   AGDA           the agda to run        (default: the one on PATH)
@@ -47,6 +51,7 @@
 .PHONY: help default check test safety safety-test profile clean EverythingLattices.agda \
         agda-md html site site-full serve gen-links check-links site-links sibling-links \
         offline-check site-check theme-check theme-sync site-test \
+        corpus-stats corpus-stats-check corpus-stats-test \
         contrast-audit font-audit offline-audit design-audit
 
 # -- Configuration -----------------------------------------------------------
@@ -213,8 +218,29 @@ theme-sync: ## Copy the theme's files from agda-algebras at THEME_REV
 site-test: ## The site tools' own tests
 	@echo "target: $@"
 	$(PYTHON) scripts/python/test_check_links.py
+	$(PYTHON) scripts/python/test_corpus_stats.py
 	$(PYTHON) scripts/python/test_site_pipeline.py
 	$(PYTHON) scripts/python/theme/test_check_offline.py
+
+# The landing page's four figures (literate modules, lines of Agda, the share
+# checked under --safe, and the toolchain) sit in `<!-- ualib:stat:NAME -->`
+# markers in docs/index.md.  scripts/python/corpus_stats.py counts them from
+# src/ and reads the toolchain from the README's badges, reconciled with
+# agda-lattices.agda-lib and flake.nix; the site build fills the same values
+# in, and the check holds the committed page to them, so a change that moves
+# a figure is the change that refreshes it.  None of the three needs Nix or
+# Agda: CI runs the check and its tests without either.
+corpus-stats: ## Count the landing page's figures and write them into docs/index.md
+	@echo "target: $@"
+	$(PYTHON) scripts/python/corpus_stats.py
+
+corpus-stats-check: ## Fail, with a diff, when a committed figure has drifted from the tree
+	@echo "target: $@"
+	$(PYTHON) scripts/python/corpus_stats.py --check
+
+corpus-stats-test: ## The counter's own tests (also part of site-test)
+	@echo "target: $@"
+	$(PYTHON) scripts/python/test_corpus_stats.py
 
 # The three audits of the copied theme load the built site in a real browser
 # (node 22 and a Chromium; set CHROME=/path/to/chrome if none is found), so

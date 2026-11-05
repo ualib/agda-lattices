@@ -2,9 +2,13 @@
 #  ci.yml: the static checks
 #  ----------------------------------------------------------------------------
 #
-#  Checks that need no Nix and no Agda: shellcheck over the scripts, and the
+#  Checks that need no Nix and no Agda: shellcheck over the scripts, the
 #  cases of the safety check (scripts/test-check-safety.sh), whose last case
-#  runs the check on src/.  The type-check is check.yml.
+#  runs the check on src/, and the landing page's figures, which
+#  scripts/python/corpus_stats.py counts from the tree (`make
+#  corpus-stats-check` fails when a committed figure has drifted, so the
+#  change that moves one is the change that refreshes the page).  The
+#  type-check is check.yml.
 #
 # =============================================================================
 
@@ -30,3 +34,6 @@ jobs:
 
       - name: The cases of the safety check
         run: bash scripts/test-check-safety.sh
+
+      - name: The landing page's figures match the tree
+        run: make corpus-stats-test corpus-stats-check
