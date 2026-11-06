@@ -7,12 +7,12 @@ hide:
 
 <div class="lattices-hero" markdown>
 
-# agda-lattices
+# The Agda Lattice Theory Library
 
 <p class="lattices-tagline" markdown>
-Lattice theory in [Agda][], on top of the [Agda Universal Algebra Library][],
-after Freese, Ježek and Nation's *Free Lattices*.  Every module is checked by
-Agda under `--without-K --exact-split --safe`.
+A constructive formalization of **lattice theory** in dependent type theory,
+following Freese, Ježek and Nation's *Free Lattices*, written in literate [Agda][]
+and type-checked on every commit under `--without-K --exact-split --safe`.
 </p>
 
 <div class="lattices-cta" markdown>
