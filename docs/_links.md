@@ -73,6 +73,7 @@
 [Lattices.Modular]: /Lattices/Modular.md
 [Lattices.Modular.Birkhoff]: /Lattices/Modular/Birkhoff.md
 [Lattices.Modular.Dedekind]: /Lattices/Modular/Dedekind.md
+[Lattices.Modular.Ladder]: /Lattices/Modular/Ladder.md
 [Lattices.Nation]: /Lattices/Nation.md
 [Lattices.Nation.Alternating]: /Lattices/Nation/Alternating.md
 [Lattices.Nation.BType]: /Lattices/Nation/BType.md
