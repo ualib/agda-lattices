@@ -29,7 +29,7 @@ module Lattices.Modular.Ladder where
 
 -- Imports from the Agda Standard Library -------------------------------------
 open import Data.Nat         using ( ℕ ; zero ; suc )
-open import Data.Product     using ( _×_ ; proj₁ )
+open import Data.Product     using ( _×_ ; proj₁ ; _,_)
 open import Level            using ( Level )
 open import Relation.Binary  using ( Setoid )
 
@@ -45,24 +45,24 @@ open import Lattices.Modular  using ( IsModular ; IsDistributive )
 #### The ladder and the theorem
 
 ```agda
-module _ {α ρ : Level} (𝑳 : Lattice α ρ) (a b w : 𝕌[ proj₁ 𝑳 ]) where
-  open Lattice-Op 𝑳         using ( _∧_ ; _∨_ )
-  open Setoid 𝔻[ proj₁ 𝑳 ]  using ( _≈_ )
+module _ {α ρ : Level} (𝓛@(𝑳 , 𝑳⊨Th-Lattice ) : Lattice α ρ) (a b w : 𝕌[ 𝑳 ]) where
+  open Lattice-Op 𝓛    using ( _∧_ ; _∨_ )
+  open Setoid 𝔻[ 𝑳 ]   using ( _≈_ )
 
   -- The rungs of the ladder over a, b and w.
-  A B : ℕ → 𝕌[ proj₁ 𝑳 ]
+  A B : ℕ → 𝕌[ 𝑳 ]
   A zero    = w ∧ a
   A (suc k) = w ∧ (a ∨ B k)
   B zero    = w ∧ b
   B (suc k) = w ∧ (b ∨ A k)
 
   -- In a modular lattice the ladder stops at the first rung.
-  ladder-stops : IsModular 𝑳 → ∀ k
-    → A (suc k) ≈ (w ∧ a) ∨ (w ∧ b)  ×  B (suc k) ≈ (w ∧ a) ∨ (w ∧ b)
+  ladder-stops : IsModular 𝓛
+    → ∀ k → A (suc k) ≈ (w ∧ a) ∨ (w ∧ b)  ×  B (suc k) ≈ (w ∧ a) ∨ (w ∧ b)
   ladder-stops = {!!}
 
   -- In a distributive lattice it stops at w ∧ (a ∨ b).
-  ladder-stops-distributive : IsDistributive 𝑳 → ∀ k
-    → A (suc k) ≈ w ∧ (a ∨ b)  ×  B (suc k) ≈ w ∧ (a ∨ b)
+  ladder-stops-distributive : IsDistributive 𝓛
+    → ∀ k → A (suc k) ≈ w ∧ (a ∨ b)  ×  B (suc k) ≈ w ∧ (a ∨ b)
   ladder-stops-distributive = {!!}
 ```

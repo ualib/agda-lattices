@@ -105,10 +105,10 @@ read off constructively.  In a finite lattice the search exists, and the
 decision block at the end of this module performs it.
 
 ```agda
-module _ (𝑳 : Lattice α ρ) where
-  open Lattice-Op 𝑳          using ( _∧_ ; _∨_ )
-  open Lattice-Order 𝑳       using ( _≤_ )
-  open Setoid 𝔻[ proj₁ 𝑳 ]   using ( _≈_ )
+module _ (𝓛@(𝑳 , 𝑳⊨Th-Lattice) : Lattice α ρ) where
+  open Lattice-Op 𝓛     using ( _∧_ ; _∨_ )
+  open Lattice-Order 𝓛  using ( _≤_ )
+  open Setoid 𝔻[ 𝑳 ]    using ( _≈_ )
 
   -- The modular law: x ≤ z implies x ∨ (y ∧ z) ≈ (x ∨ y) ∧ z.
   IsModular : Type (α ⊔ ρ)
@@ -150,17 +150,17 @@ A distributive lattice is modular: for `x ≤ z`,
 `(x ∨ y) ∧ z ≈ (z ∧ x) ∨ (z ∧ y) ≈ x ∨ (y ∧ z)`, since `z ∧ x ≈ x`.
 
 ```agda
-module _ (𝑳 : Lattice α ρ) where
-  open Lattice-Op 𝑳          using ( _∧_ ; _∨_ ; ∧-cong ; ∨-cong ; ∧-comm-law ; ∨-comm-law
-                                   ; ∨-assoc-law ; absorbˡ-law ; absorbʳ-law )
-  open Lattice-Order 𝑳       using ( _≤_ ; ≤-via-∨ ; ∨-upperˡ )
-  open Setoid 𝔻[ proj₁ 𝑳 ]   using ( _≈_ ; refl ; sym ; trans )
-  open SetoidReasoning 𝔻[ proj₁ 𝑳 ]
+module _ (𝓛@(𝑳 , 𝑳⊨Th-Lattice) : Lattice α ρ) where
+  open Lattice-Op 𝓛     using  ( _∧_ ; _∨_ ; ∧-cong ; ∨-cong ; ∧-comm-law ; ∨-comm-law
+                                ; ∨-assoc-law ; absorbˡ-law ; absorbʳ-law )
+  open Lattice-Order 𝓛  using  ( _≤_ ; ≤-via-∨ ; ∨-upperˡ )
+  open Setoid 𝔻[ 𝑳 ]    using  ( _≈_ ; refl ; sym ; trans )
+  open SetoidReasoning 𝔻[ 𝑳 ]
 
-  IsModular→ModularIdentity : IsModular 𝑳 → ModularIdentity 𝑳
+  IsModular→ModularIdentity : IsModular 𝓛 → ModularIdentity 𝓛
   IsModular→ModularIdentity m x y z = m x y (x ∨ z) ∨-upperˡ
 
-  ModularIdentity→IsModular : ModularIdentity 𝑳 → IsModular 𝑳
+  ModularIdentity→IsModular : ModularIdentity 𝓛 → IsModular 𝓛
   ModularIdentity→IsModular mi x y z x≤z = begin
     x ∨ (y ∧ z)        ≈˘⟨ ∨-cong refl (∧-cong refl x∨z≈z) ⟩
     x ∨ (y ∧ (x ∨ z))  ≈⟨ mi x y z ⟩
@@ -171,15 +171,15 @@ module _ (𝑳 : Lattice α ρ) where
     x∨z≈z = ≤-via-∨ x≤z
 
   -- A failure of the modular law refutes it.
-  ModularFailure→¬IsModular : ModularFailure 𝑳 → ¬ IsModular 𝑳
+  ModularFailure→¬IsModular : ModularFailure 𝓛 → ¬ IsModular 𝓛
   ModularFailure→¬IsModular (x , y , z , x≤z , fails) m = fails (m x y z x≤z)
 
   -- A failure of the distributive law refutes it.
-  DistributiveFailure→¬IsDistributive : DistributiveFailure 𝑳 → ¬ IsDistributive 𝑳
+  DistributiveFailure→¬IsDistributive : DistributiveFailure 𝓛 → ¬ IsDistributive 𝓛
   DistributiveFailure→¬IsDistributive (x , y , z , fails) d = fails (d x y z)
 
   -- The dual distributive law, derived.
-  IsDistributive-dual : IsDistributive 𝑳 → ∀ x y z → x ∨ (y ∧ z) ≈ (x ∨ y) ∧ (x ∨ z)
+  IsDistributive-dual : IsDistributive 𝓛 → ∀ x y z → x ∨ (y ∧ z) ≈ (x ∨ y) ∧ (x ∨ z)
   IsDistributive-dual d x y z = sym (begin
     (x ∨ y) ∧ (x ∨ z)              ≈⟨ d (x ∨ y) x z ⟩
     ((x ∨ y) ∧ x) ∨ ((x ∨ y) ∧ z)  ≈⟨ ∨-cong (trans ∧-comm-law absorbˡ-law) ∧-comm-law ⟩
@@ -191,7 +191,7 @@ module _ (𝑳 : Lattice α ρ) where
     x∨z∧x≈x : x ∨ (z ∧ x) ≈ x
     x∨z∧x≈x = trans ∨-comm-law (trans (∨-cong ∧-comm-law refl) absorbʳ-law)
 
-  IsDistributive→IsModular : IsDistributive 𝑳 → IsModular 𝑳
+  IsDistributive→IsModular : IsDistributive 𝓛 → IsModular 𝓛
   IsDistributive→IsModular d x y z x≤z = sym (begin
     (x ∨ y) ∧ z        ≈⟨ ∧-comm-law ⟩
     z ∧ (x ∨ y)        ≈⟨ d z x y ⟩
@@ -210,35 +210,38 @@ modular law the hypothesis `x ≤ z` goes to `h x ≤ h z` by monotonicity
 (`hom-preserves-≤`{.AgdaFunction}).
 
 ```agda
-module _ (𝑲 : Lattice α ρᵃ) (𝑳 : Lattice β ρᵇ) (sub : proj₁ 𝑲 IsSubalgebraOf proj₁ 𝑳) where
-  open Lattice-Op 𝑲          using () renaming ( _∧_ to _∧ᴷ_ ; _∨_ to _∨ᴷ_ )
-  open Lattice-Op 𝑳          using ( _∧_ ; _∨_ ; ∧-cong ; ∨-cong )
-  open Setoid 𝔻[ proj₁ 𝑳 ]   using ( refl )
-  open SetoidReasoning 𝔻[ proj₁ 𝑳 ]
+module _
+  (𝓚@(𝑲 , 𝑲⊨Th-Lattice) : Lattice α ρᵃ)
+  (𝓛@(𝑳 , 𝑳⊨Th-Lattice) : Lattice β ρᵇ)
+  (sub : 𝑲 IsSubalgebraOf 𝑳) where
+  open Lattice-Op 𝓚    using () renaming ( _∧_ to _∧ᴷ_ ; _∨_ to _∨ᴷ_ )
+  open Lattice-Op 𝓛    using ( _∧_ ; _∨_ ; ∧-cong ; ∨-cong )
+  open Setoid 𝔻[ 𝑳 ]   using ( refl )
+  open SetoidReasoning 𝔻[ 𝑳 ]
 
   private
-    h : hom (proj₁ 𝑲) (proj₁ 𝑳)
-    h = proj₁ sub
+    h : hom 𝑲 𝑳
+    h = sub .proj₁
 
-    f : 𝕌[ proj₁ 𝑲 ] → 𝕌[ proj₁ 𝑳 ]
-    f = proj₁ h ⟨$⟩_
+    f : 𝕌[ 𝑲 ] → 𝕌[ 𝑳 ]
+    f = h .proj₁ ⟨$⟩_
 
-  IsModular-S-invar : IsModular 𝑳 → IsModular 𝑲
+  IsModular-S-invar : IsModular 𝓛 → IsModular 𝓚
   IsModular-S-invar m x y z x≤z = proj₂ sub (begin
-    f (x ∨ᴷ (y ∧ᴷ z))   ≈⟨ hom-preserves-∨ 𝑲 𝑳 h x (y ∧ᴷ z) ⟩
-    f x ∨ f (y ∧ᴷ z)    ≈⟨ ∨-cong refl (hom-preserves-∧ 𝑲 𝑳 h y z) ⟩
-    f x ∨ (f y ∧ f z)   ≈⟨ m (f x) (f y) (f z) (hom-preserves-≤ 𝑲 𝑳 h x≤z) ⟩
-    (f x ∨ f y) ∧ f z   ≈˘⟨ ∧-cong (hom-preserves-∨ 𝑲 𝑳 h x y) refl ⟩
-    f (x ∨ᴷ y) ∧ f z    ≈˘⟨ hom-preserves-∧ 𝑲 𝑳 h (x ∨ᴷ y) z ⟩
+    f (x ∨ᴷ (y ∧ᴷ z))   ≈⟨ hom-preserves-∨ 𝓚 𝓛 h x (y ∧ᴷ z) ⟩
+    f x ∨ f (y ∧ᴷ z)    ≈⟨ ∨-cong refl (hom-preserves-∧ 𝓚 𝓛 h y z) ⟩
+    f x ∨ (f y ∧ f z)   ≈⟨ m (f x) (f y) (f z) (hom-preserves-≤ 𝓚 𝓛 h x≤z) ⟩
+    (f x ∨ f y) ∧ f z   ≈˘⟨ ∧-cong (hom-preserves-∨ 𝓚 𝓛 h x y) refl ⟩
+    f (x ∨ᴷ y) ∧ f z    ≈˘⟨ hom-preserves-∧ 𝓚 𝓛 h (x ∨ᴷ y) z ⟩
     f ((x ∨ᴷ y) ∧ᴷ z)   ∎)
 
-  IsDistributive-S-invar : IsDistributive 𝑳 → IsDistributive 𝑲
+  IsDistributive-S-invar : IsDistributive 𝓛 → IsDistributive 𝓚
   IsDistributive-S-invar d x y z = proj₂ sub (begin
-    f (x ∧ᴷ (y ∨ᴷ z))          ≈⟨ hom-preserves-∧ 𝑲 𝑳 h x (y ∨ᴷ z) ⟩
-    f x ∧ f (y ∨ᴷ z)           ≈⟨ ∧-cong refl (hom-preserves-∨ 𝑲 𝑳 h y z) ⟩
+    f (x ∧ᴷ (y ∨ᴷ z))          ≈⟨ hom-preserves-∧ 𝓚 𝓛 h x (y ∨ᴷ z) ⟩
+    f x ∧ f (y ∨ᴷ z)           ≈⟨ ∧-cong refl (hom-preserves-∨ 𝓚 𝓛 h y z) ⟩
     f x ∧ (f y ∨ f z)          ≈⟨ d (f x) (f y) (f z) ⟩
-    (f x ∧ f y) ∨ (f x ∧ f z)  ≈˘⟨ ∨-cong (hom-preserves-∧ 𝑲 𝑳 h x y) (hom-preserves-∧ 𝑲 𝑳 h x z) ⟩
-    f (x ∧ᴷ y) ∨ f (x ∧ᴷ z)    ≈˘⟨ hom-preserves-∨ 𝑲 𝑳 h (x ∧ᴷ y) (x ∧ᴷ z) ⟩
+    (f x ∧ f y) ∨ (f x ∧ f z)  ≈˘⟨ ∨-cong (hom-preserves-∧ 𝓚 𝓛 h x y) (hom-preserves-∧ 𝓚 𝓛 h x z) ⟩
+    f (x ∧ᴷ y) ∨ f (x ∧ᴷ z)    ≈˘⟨ hom-preserves-∨ 𝓚 𝓛 h (x ∧ᴷ y) (x ∧ᴷ z) ⟩
     f ((x ∧ᴷ y) ∨ᴷ (x ∧ᴷ z))   ∎)
 ```
 
