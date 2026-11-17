@@ -17,7 +17,8 @@ of sequences
     B₀ = w ∧ b,   Bₖ₊₁ = w ∧ (b ∨ Aₖ).
 
 In a modular lattice the ladder stops at the first rung: every `Aₖ` and every
-`Bₖ` with `k ≥ 1` is `(w ∧ a) ∨ (w ∧ b)`, and in a distributive lattice that is
+`Bₖ` with `k ≥ 1` is `(w ∧ a) ∨ (w ∧ b)`.  A distributive lattice is modular,
+so the same holds there, and the distributive law rewrites the common value as
 `w ∧ (a ∨ b)`.
 
 <!--
